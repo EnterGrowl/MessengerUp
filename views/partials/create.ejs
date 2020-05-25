@@ -1,0 +1,50 @@
+<div id="create" hidden>
+	<h5>CREATE VIEWS</h5>
+	<p><small>We'll fill out the details of the views in the next steps.</small></p>
+	<form>
+		<div class="row">
+			<div class="ten columns">
+				<input class="u-full-width" type="text" placeholder="Enter view name" id="view">
+			</div>
+			<div class="two columns">
+				<a href="javascript:void(0)" class="add button">+</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="ten columns">
+				<ul id="createViews"></ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="three columns">
+				<a class="button button-back" href="javascript:void(0)" onclick="back4()">BACK</a>
+			</div>
+			<div class="two columns">
+				<a class="button button-primary" href="javascript:void(0)" id="4">CONTINUE</a>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">
+		function back4() {
+			$('#create').hide()
+			$('#defaults').show()
+		}
+
+		$('.add').on('click', function() {
+			var name = $('#view').val()
+		  	if (!isUniqueName(name)) {
+		  		alert('Please use unique names for all your views:', name)
+		  		return 1
+		  	}
+			$('#view').val('')
+			let err = addRow('createViews', name)
+			if (!err) window.viewNames.push(name)
+		})
+
+		$('#4').on('click', function() {
+			$('#create').hide()
+			$('#amend').show()
+			initViewsList('listViews')
+		})
+	</script>
+</div>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title><%= title %></title>
+	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
+	    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	    <link rel="stylesheet" type="text/css" href="stylesheets/splash.css">
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cash/7.0.1/cash.min.js"></script>
+  	</head>
+  	<body>
+	    <div class="nav">
+			<h1><%= title %></h1>
+		    <p><%= subtitle %></p>
+	    </div>
+	    <script type="text/javascript">
+	    	window.agg = []
+	    	window.viewNames = ['welcome', 'fallback', 'greeting']
+
+	    	function isUniqueName(text) {
+	    		if (text==='welcome'||
+	    			text==='fallback'||
+	    			text==='greeting'||
+	    			window.viewNames.indexOf(text)===-1) {
+	    			return true
+	    		}
+	    		return false
+	    	}
+
+			function addRow(el, text, noRemove) {
+			  if (text) {
+			  	if (noRemove) {
+			  		$(`#${el}`).append(`<li>${text}</li>`)
+			  	} else {
+			  		$(`#${el}`).append(`<li class="remList"><span class="val">${text}</span>&nbsp;<a class="button red right remove">x</a></li>`)
+			  	}
+			    $('.remove').off().on('click', function() {
+					removeRow(this)
+			    })
+			    return 0
+			  }
+			  return 1
+			}
+
+			function removeRow(that) {
+				let name = $(that).closest('li').html()
+				let re = /class="val">(.*?)\<\//
+				name = re.exec(name)[1]
+				for (var i = window.viewNames.length - 1; i >= 0; i--) {
+					if (window.viewNames[i] === name)
+						window.viewNames.splice(i, 1)
+				}
+				$(that).closest('li').remove()
+			}
+
+			function initViewsList(el) {
+				console.log('initViewsList')
+				$(`#${el}`).html('')
+				console.log(window.viewNames)
+				window.viewNames.forEach(function(v) {
+					addRow(el, v, true)
+				})
+			}
+	    </script>
+
+		<!-- Primary Page Layout
+		–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+		<div class="section hero">
+			<div class="container">
+			  <div class="row">
+			    <div class="one-half column">
+			      <h4 class="hero-heading">Build and deploy your Messenger app in one place.</h4>
+			      <a class="button button-primary start" href="javascript:void(0)">Get Started</a>
+			    </div>
+			    <div class="one-half column phones">
+			      <img class="phone" src="images/iphone.png">
+			      <img class="phone" src="images/iphone.png">
+			    </div>
+			  </div>
+			</div>
+		</div>
+
+		<div class="section values">
+			<div class="container">
+			  <div class="row">
+			    <div class="one-third column value">
+			      <h2 class="value-multiplier">+100M</h2>
+			      <h5 class="value-heading">Users</h5>
+			      <p class="value-description">+20% of the population is here.</p>
+			    </div>
+			    <div class="one-third column value">
+			      <h2 class="value-multiplier">2M</h2>
+			      <h5 class="value-heading"><small>Monthly</small> DLs</h5>
+			      <p class="value-description">Messenger is growing every day.</p>
+			    </div>
+			    <div class="one-third column value">
+			      <h2 class="value-multiplier">FREE</h2>
+			      <h5 class="value-heading">No Excuses</h5>
+			      <p class="value-description">Get your source code right now!</p>
+			    </div>
+			  </div>
+			</div>
+		</div>
+
+		<div class="section get-help">
+			<div class="container">
+			  <h3 class="section-heading">What are you waiting for?</h3>
+			  <p class="section-description">Your own Facebook Messenger application in a matter of moments.<br><br><small>MessengerUp™ generates your own custom Facebook Messenger application at no cost or fees. The source code is yours to keep. Need someone to deploy it for you? Let us do it for you hassle-free.</small></p>
+			  <a class="button button-primary start" href="javascript:void(0)">Let's Go!</a>
+			</div>
+		</div>
+
+		<div class="section categories">
+			<div class="container">
+			  <h3 class="section-heading">Why Messenger?</h3>
+			  <p class="section-description">Access new depths with conversational commerce and information exchange. Express your perfect communications with text, images, and web redirects at the moment someone is interested in your products or services. It's a natural extension of yourself to a whole new audience!</p>
+			  <div class="row">
+			    <div class="one-half column category">
+			      <img class="u-max-full-width" src="images/placeholder.png">
+			    </div>
+			    <div class="one-half column category">
+			      <img class="u-max-full-width" src="images/placeholder.png">
+			    </div>
+			  </div>
+			</div>
+		</div>
+
+		<div class='container' id='generator' hidden>
+			<%include partials/welcome%>
+			<%include partials/configuration%>
+			<%include partials/defaults%>
+			<%include partials/create%>
+			<%include partials/amend%>
+		</div>
+	</body>
+	<script type="text/javascript">
+		$(document).ready(function() {
+		  	$('.start').on('click', function() {
+		  		$('.section').hide()
+		  		$('#generator').show()
+		  	})
+		});
+	</script>
+</html>

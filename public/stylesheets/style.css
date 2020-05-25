@@ -1,0 +1,49 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.nav {
+	left: -3%;
+    top: -34px;
+    position: relative;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul li {
+  border: 1px solid #ddd;
+  margin-top: -1px;
+  padding: 8px;
+}
+
+.highlighted {
+	background-color: #f6f6f6;
+}
+
+.remList {
+    float: left;
+    width: -webkit-fill-available;
+}
+
+.right {
+    float: right;
+}
+
+.red {
+    color: palevioletred;
+}
+
+.button.button-back {
+  color: white;
+  background-color: #f08a33;
+  border-color: #f08a33;
+}

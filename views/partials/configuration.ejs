@@ -1,0 +1,52 @@
+<div id="configuration" hidden>
+	<h5>CONFIGURATION</h5>
+	<p><small>Your website URL and Facebook Page and Messenger App info.</small></p>
+	<form>
+		<div class="row">
+			<div class="six columns">
+				<label for="appId">APP ID</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="appId">
+			</div>
+			<div class="six columns">
+				<label for="pageId">PAGE ID</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="pageId">
+			</div>
+		</div>
+		<div class="row">
+			<div class="six columns">
+				<label for="verifyToken">VERIFY TOKEN</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="verifyToken">
+			</div>
+			<div class="six columns">
+				<label for="secret">APP SECRET</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="secret">
+			</div>
+		</div>
+		<div class="row">
+			<div class="six columns">
+				<label for="pageToken">PAGE ACCESS TOKEN</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="pageToken">
+			</div>
+			<div class="six columns">
+				<label for="webURL">WEB URL</label>
+				<input class="u-full-width" type="text" placeholder="1234567890" id="webURL">
+			</div>
+		</div>
+		<a class="button button-primary" href="javascript:void(0)" id="2">CONTINUE</a>
+	</form>
+	<script type="text/javascript">
+		$('#2').on('click', function() {
+			window.agg[0] = {
+				appId: $('#appId').val(),
+				pageId: $('#pageId').val(),
+				verifyToken: $('#verifyToken').val(),
+				secret: $('#secret').val(),
+				pageToken: $('#pageToken').val(),
+				webURL: $('#webURL').val(),
+			}
+
+			$('#configuration').hide()
+			$('#defaults').show()
+		})
+	</script>
+</div>
