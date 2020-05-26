@@ -7,6 +7,13 @@ a {
   color: #00B7FF;
 }
 
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: #ccc;
+  border: 1px solid #ccc;
+}
+
 .nav {
 	left: -3%;
     top: -34px;
@@ -25,7 +32,7 @@ ul li {
   padding: 8px;
 }
 
-.highlighted {
+ul li.highlighted {
 	background-color: #f6f6f6;
 }
 
@@ -42,8 +49,39 @@ ul li {
     color: palevioletred;
 }
 
+.button {
+  border-radius: 5px!important;
+}
+
 .button.button-back {
   color: white;
   background-color: #f08a33;
   border-color: #f08a33;
+}
+
+.bordered-div {
+  padding: 2.2rem .5rem;
+  border: 1px solid #E1E1E1;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.bordered-div-margin-bottom {
+  margin-bottom: inherit;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0rem!important; 
+}
+
+.border-bottom {
+  border-bottom: 1px solid #E1E1E1;
+}
+
+.no-text-decoration {
+  text-decoration: none!important
+}
+
+.hand-cursor {
+  cursor: pointer;
 }

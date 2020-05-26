@@ -1,14 +1,84 @@
-<div id="amend" hidden>
+<div id="amend">
 	<h5>AMEND</h5>
-	<p><small>Fill out the details of your views with text, photo, web, and navigation elements. Select a view to enable it's settings.</small></p>
+	<p><small>Fill out the details of your views with text, photo, web, and navigation elements. Select a view and add elements to it.</small></p>
 	<form>
 		<div class="row">
 			<p><strong><small>YOUR VIEWS</small></strong></p>
 			<ul id="listViews"></ul>
 		</div>
-		<div class="row">
+		<div class="bordered-div row">
+			<div class="three columns">
+				<p><strong><small>ELEMENT</small></strong></p>
+			</div>
+			<div class="three columns">
+				<a class="button disabled" href="javascript:void(0)" id="displayAdd">+</a>
+			</div>
+			<div class="six columns">
+				<input type="radio" name="element" class="elType" onclick="elementSelect(this);" value="text" checked>
+				<span class="label-body">Text Element</span><br/>
+				<input type="radio" name="element" class="elType" onclick="elementSelect(this);" value="photo">
+				<span class="label-body">Photo Element</span><br/>
+				<input type="radio" name="element" class="elType" onclick="elementSelect(this);" value="web">
+				<span class="label-body">Web Element</span><br/>
+				<input type="radio" name="element" class="elType" onclick="elementSelect(this);" value="nav">
+				<span class="label-body">Navigation Element</span>
+			</div>
+		</div>
+		<div class="bordered-div row">
+			<div class="one columns">
+				&nbsp;
+			</div>
 			<div class="ten columns">
-				
+				<ul id="viewElements"></ul>
+			</div>
+		</div>
+		<div class="bordered-div border-bottom bordered-div-margin-bottom row" id="textOptions">
+			<div class="one columns">
+				&nbsp;
+			</div>
+			<div class="ten columns">
+				<textarea placeholder="Enter text" class="u-full-width"></textarea>
+			</div>
+		</div>
+		<div class="bordered-div border-bottom bordered-div-margin-bottom" id="urlOptions" hidden>
+			<div class="row">
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<input class="u-full-width" type="text" placeholder="title (optional)" id="title">
+				</div>
+			</div>
+			<div class="row">
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<input class="u-full-width" type="text" placeholder="subtitle (optional)" id="subtitle">
+				</div>
+			</div>
+			<div class="row">
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<input class="u-full-width" type="text" placeholder="url" id="url">
+				</div>
+			</div>
+		</div>
+		<div class="bordered-div border-bottom bordered-div-margin-bottom" id="navigationOptions" hidden>
+			<div class="row">
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<label for="exampleRecipientInput">Select destination</label>
+					<select class="u-full-width" id="exampleRecipientInput">
+						<option value="Option 1">Questions</option>
+						<option value="Option 2">Admiration</option>
+						<option value="Option 3">Can I get your number?</option>
+					</select>
+				</div>
 			</div>
 		</div>
 		<div class="row">
@@ -21,6 +91,59 @@
 		</div>
 	</form>
 	<script type="text/javascript">
+		initViewsList('listViews')
+		console.log('foo')
+		window.destinations = []
+		window.viewElements = []
+		var currentValue = 'text'
+		var currentView = {}
+		$($('.viewAmend').first()).addClass('highlighted')
+
+
+		// arbitrary elements
+		var arr = ['One', 'Two']
+		arr.forEach(function(t) {
+			addRow('viewElements', t)
+		})
+
+		// user selects view to amend
+		function changeView(view) {
+			document.querySelectorAll('.listViews.highlighted').forEach(function(el) {
+				console.log(el)
+			    el.classList.remove('highlighted');
+			});
+			view.className += 'highlighted'
+		}
+
+		// shows input options
+		function elementSelect(radio) {
+			currentValue = radio.value
+			switch (currentValue) {
+				case 'text':
+					$('#urlOptions').hide()
+					$('#navigationOptions').hide()
+					$('#textOptions').show()
+					break
+				case 'photo':
+				case 'web':
+					$('#textOptions').hide()
+					$('#navigationOptions').hide()
+					$('#urlOptions').show()
+					break
+				case 'nav':
+					$('#textOptions').hide()
+					$('#urlOptions').hide()
+					$('#navigationOptions').show()
+					break
+			}
+		}
+
+		// edit previously made element
+		function changeElement(element) {
+			let name = $(element).html()
+			// switch on name
+		}
+
 		function back5() {
 			$('#amend').hide()
 			$('#create').show()

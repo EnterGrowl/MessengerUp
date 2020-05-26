@@ -29,25 +29,45 @@
 			function addRow(el, text, noRemove) {
 			  if (text) {
 			  	if (noRemove) {
-			  		$(`#${el}`).append(`<li>${text}</li>`)
+			  		if (el === 'listViews') {
+			  			$(`#${el}`).append(`<li class="no-margin-bottom viewAmend">${text}</li>`)
+			  			$('.viewAmend').off().on('click', function() {
+			  				$('.viewAmend').removeClass("highlighted")
+			  				$(this).addClass('highlighted')
+			  			})
+			  		} else {
+			  			$(`#${el}`).append(`<li class="no-margin-bottom">${text}</li>`)
+			  		}
 			  	} else {
-			  		$(`#${el}`).append(`<li class="remList"><span class="val">${text}</span>&nbsp;<a class="button red right remove">x</a></li>`)
+			  		if (el === 'viewElements') {
+						$(`#${el}`).append(`<li class="no-margin-bottom"><a class="no-text-decoration" href="javascript:void(0)" onclick="changeElement(this)">${text}</a>&nbsp;<a class="hand-cursor red remove right">x</a></li>`)
+						    $('.remove').off().on('click', function() {
+								removeRow(this, true)
+						    })
+			  		} else {
+						$(`#${el}`).append(`<li class="remList"><span class="val">${text}</span>&nbsp;<a class="button red right remove">x</a></li>`)
+					    $('.remove').off().on('click', function() {
+							removeRow(this)
+					    })
+			  		}
 			  	}
-			    $('.remove').off().on('click', function() {
-					removeRow(this)
-			    })
 			    return 0
 			  }
 			  return 1
 			}
 
-			function removeRow(that) {
-				let name = $(that).closest('li').html()
-				let re = /class="val">(.*?)\<\//
-				name = re.exec(name)[1]
-				for (var i = window.viewNames.length - 1; i >= 0; i--) {
-					if (window.viewNames[i] === name)
-						window.viewNames.splice(i, 1)
+			function removeRow(that, viewElements) {
+				if (viewElements) {
+					console.log(that)
+					console.log('remove view element')
+				} else {
+					let name = $(that).closest('li').html()
+					let re = /class="val">(.*?)\<\//
+					name = re.exec(name)[1]
+					for (var i = window.viewNames.length - 1; i >= 0; i--) {
+						if (window.viewNames[i] === name)
+							window.viewNames.splice(i, 1)
+					}
 				}
 				$(that).closest('li').remove()
 			}
