@@ -41,7 +41,7 @@
 		  	}
 			$('#view').val('')
 			let err = addRow('createViews', name)
-			if (!err) window.viewNames.push(name)
+			if (!err) window.viewNames.push(name.replace('"', '\''))
 		})
 
 		$('#4').on('click', function() {

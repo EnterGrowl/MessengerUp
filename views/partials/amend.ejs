@@ -1,5 +1,5 @@
 <div id="amend">
-	<h5>AMEND</h5>
+	<h5>AMEND YOUR VIEWS</h5>
 	<p><small>Fill out the details of your views with text, photo, web, and navigation elements. Select a view and add elements to it.</small></p>
 	<form>
 		<div class="row">
@@ -11,7 +11,8 @@
 				<p><strong><small>ELEMENT</small></strong></p>
 			</div>
 			<div class="three columns">
-				<a class="button disabled" href="javascript:void(0)" id="displayAdd">+</a>
+				<a class="button button-go" href="javascript:void(0)" id="displayAdd">+</a>
+				<p><small>ADD ELEMENT</small></p>
 			</div>
 			<div class="six columns">
 				<input type="radio" name="element" class="elType" onclick="elementSelect(this);" value="text" checked>
@@ -37,7 +38,7 @@
 				&nbsp;
 			</div>
 			<div class="ten columns">
-				<textarea placeholder="Enter text" class="u-full-width"></textarea>
+				<textarea placeholder="Enter text" class="u-full-width" id="textValue"></textarea>
 			</div>
 		</div>
 		<div class="bordered-div border-bottom bordered-div-margin-bottom" id="urlOptions" hidden>
@@ -46,7 +47,7 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="title (optional)" id="title">
+					<input class="u-full-width" type="text" placeholder="title (optional)" id="titleEl">
 				</div>
 			</div>
 			<div class="row">
@@ -54,7 +55,7 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="subtitle (optional)" id="subtitle">
+					<input class="u-full-width" type="text" placeholder="subtitle (optional)" id="subtitleEl">
 				</div>
 			</div>
 			<div class="row">
@@ -62,7 +63,7 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="url" id="url">
+					<input class="u-full-width" type="text" placeholder="url" id="urlEl">
 				</div>
 			</div>
 		</div>
@@ -72,11 +73,9 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<label for="exampleRecipientInput">Select destination</label>
-					<select class="u-full-width" id="exampleRecipientInput">
-						<option value="Option 1">Questions</option>
-						<option value="Option 2">Admiration</option>
-						<option value="Option 3">Can I get your number?</option>
+					<label for="destinationNames">Select destination</label>
+					<select class="u-full-width" id="destinationNames">
+						<option value="">Destinations</option>
 					</select>
 				</div>
 			</div>
@@ -91,33 +90,108 @@
 		</div>
 	</form>
 	<script type="text/javascript">
-		initViewsList('listViews')
-		console.log('foo')
-		window.destinations = []
-		window.viewElements = []
+		// init
+		var destinations = []
+		var viewElements = []
+		var selectedView = 'welcome'
 		var currentValue = 'text'
-		var currentView = {}
-		$($('.viewAmend').first()).addClass('highlighted')
-
-
-		// arbitrary elements
-		var arr = ['One', 'Two']
-		arr.forEach(function(t) {
-			addRow('viewElements', t)
+		var viewAgg = {}
+		for (var i = 0; i < window.viewNames.length; i++) {
+			viewAgg[window.viewNames[i]] = {elements: [], options: []}
+		}
+		window.viewNames.forEach(function(v) {
+			if (v!==selectedView) {
+				$('#destinationNames').append(`<option value="${v}">${v}</option>`)
+			}
 		})
+		initViewsList('listViews')
+		$($('.viewAmend').first()).addClass('highlighted')
+		elementsForView()
 
-		// user selects view to amend
-		function changeView(view) {
-			document.querySelectorAll('.listViews.highlighted').forEach(function(el) {
-				console.log(el)
-			    el.classList.remove('highlighted');
-			});
-			view.className += 'highlighted'
+		// add element to view
+		function createElement() {
+			console.log('in createElement')
+			var element = { type: currentValue }
+			var context = 'elements'
+			switch (currentValue) {
+				case 'text':
+					element.value = $('#textValue').val()
+					console.log(element)
+					$('#textValue').val('')
+					break
+
+				case 'photo':
+				case 'web':
+					var re = /^https:\/\//
+					element.value = {
+						title: $('#titleEl').val(),
+						subtitle: $('#subtitleEl').val(),
+						url: $('#urlEl').val().replace(/ /g, '').toLowerCase()
+					}
+					if (!re.exec(element.value.url)) {
+						alert('URL must start with "https://", please try again.')
+						return
+					}
+					if (currentValue === 'web') {
+						if (element.value.url!==window.agg[0].webURL) {
+							alert('Web URL must match configuration web URL from earlier setting, in the section named "Configuration".')
+							return							
+						}
+					}
+					$('#titleEl').val('')
+					$('#subtitleEl').val('')
+					$('#urlEl').val('')
+					break
+
+				case 'nav':
+					context = 'options'
+					element.value = $('#destinationNames').val()
+					$('#destinationNames').prop('selectedIndex', 0)
+					break
+
+				default:
+					console.log('default')
+					break
+			}
+			viewAgg[selectedView][context].push(element)
+			elementsForView()
+		}
+
+		$('#displayAdd').off().on('click', createElement)
+
+		// reset all inputs
+		function resetInputs() {
+			$('textValue').val('')
+			$('title').val('')
+			$('subtitle').val('')
+			$('url').val('')
+		}
+
+		// display elements of a view
+		function elementsForView() {
+			let dict = viewAgg[selectedView]
+			let elems = dict.elements.concat(dict.options)
+			$('#viewElements').html('')
+			if (elems.length) {
+				elems.forEach(function(e) {
+					console.log(e)
+					var v = ''
+					if (e.type === 'text' || e.type === 'nav') {
+						v = e.value
+					} else if (e.type === 'photo' || e.type === 'web') {
+						v = JSON.stringify(e.value, null, 4)
+					} 
+					addRow('viewElements', `${e.type}: ${v}`)
+				})
+			} else {
+				// none created
+				addRow('viewElements', 'This view has no elements', true)
+			}
 		}
 
 		// shows input options
-		function elementSelect(radio) {
-			currentValue = radio.value
+		function elementSelect(radio, elName) {
+			currentValue = elName || radio.value
 			switch (currentValue) {
 				case 'text':
 					$('#urlOptions').hide()
@@ -136,6 +210,15 @@
 					$('#navigationOptions').show()
 					break
 			}
+		}
+
+		// user changes view to amend els
+		function switchView(view) {
+			selectedView = view
+			$('input[type=radio][name=element][value=text]').prop('checked', true)
+			elementSelect(null, 'text')
+			resetInputs()
+			elementsForView()
 		}
 
 		// edit previously made element

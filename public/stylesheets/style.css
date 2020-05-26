@@ -4,7 +4,7 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00B7FF
 }
 
 a.disabled {
@@ -42,15 +42,15 @@ ul li.highlighted {
 }
 
 .right {
-    float: right;
+    float: right
 }
 
 .red {
-    color: palevioletred;
+    color: palevioletred
 }
 
 .button {
-  border-radius: 5px!important;
+  border-radius: 5px!important
 }
 
 .button.button-back {
@@ -59,23 +59,29 @@ ul li.highlighted {
   border-color: #f08a33;
 }
 
+.button.button-go {
+    color: #FFF;
+    background-color: #1bab6f;
+    border-color: #1bab6f;
+}
+
 .bordered-div {
   padding: 2.2rem .5rem;
-  border: 1px solid #E1E1E1;
+  border: 1px solid #d0b78a;
   border-top: 0;
   border-bottom: 0;
 }
 
 .bordered-div-margin-bottom {
-  margin-bottom: inherit;
+  margin-bottom: inherit
 }
 
 .no-margin-bottom {
-  margin-bottom: 0rem!important; 
+  margin-bottom: 0rem!important 
 }
 
 .border-bottom {
-  border-bottom: 1px solid #E1E1E1;
+  border-bottom: 1px solid #d0b78a
 }
 
 .no-text-decoration {
@@ -83,5 +89,5 @@ ul li.highlighted {
 }
 
 .hand-cursor {
-  cursor: pointer;
+  cursor: pointer
 }

@@ -36,14 +36,22 @@
 	</form>
 	<script type="text/javascript">
 		$('#2').on('click', function() {
-			window.agg[0] = {
+			var dict = {
 				appId: $('#appId').val(),
 				pageId: $('#pageId').val(),
 				verifyToken: $('#verifyToken').val(),
 				secret: $('#secret').val(),
 				pageToken: $('#pageToken').val(),
-				webURL: $('#webURL').val(),
+				webURL: $('#webURL').val().replace(/ /g, '').toLowerCase(),
 			}
+
+			var re = /^https:\/\//
+			if (dict.webURL.trim() && !re.exec(dict.webURL)) {
+				alert('Web URL must start with "https://", please try again.')
+				return
+			}
+
+			window.agg[0] = dict
 
 			$('#configuration').hide()
 			$('#defaults').show()

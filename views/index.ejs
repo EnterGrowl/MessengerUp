@@ -5,7 +5,7 @@
 	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
 	    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	    <link rel="stylesheet" type="text/css" href="stylesheets/splash.css">
-	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cash/7.0.1/cash.min.js"></script>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
   	</head>
   	<body>
 	    <div class="nav">
@@ -34,6 +34,7 @@
 			  			$('.viewAmend').off().on('click', function() {
 			  				$('.viewAmend').removeClass("highlighted")
 			  				$(this).addClass('highlighted')
+			  				switchView($(this).text())
 			  			})
 			  		} else {
 			  			$(`#${el}`).append(`<li class="no-margin-bottom">${text}</li>`)
@@ -73,9 +74,7 @@
 			}
 
 			function initViewsList(el) {
-				console.log('initViewsList')
 				$(`#${el}`).html('')
-				console.log(window.viewNames)
 				window.viewNames.forEach(function(v) {
 					addRow(el, v, true)
 				})
@@ -125,7 +124,7 @@
 		<div class="section get-help">
 			<div class="container">
 			  <h3 class="section-heading">What are you waiting for?</h3>
-			  <p class="section-description">Your own Facebook Messenger application in a matter of moments.<br><br><small>MessengerUp™ generates your own custom Facebook Messenger application at no cost or fees. The source code is yours to keep. Need someone to deploy it for you? Let us do it for you hassle-free.</small></p>
+			  <p class="section-description">Your Facebook Messenger app is moments away.<br><br><small>MessengerUp™ is an open source project that generates your customized Facebook Messenger application, at no cost or fees, and deployment ready. The source code is yours to keep. Need someone to deploy it for you? We can do that too.</small></p>
 			  <a class="button button-primary start" href="javascript:void(0)">Let's Go!</a>
 			</div>
 		</div>
@@ -133,7 +132,7 @@
 		<div class="section categories">
 			<div class="container">
 			  <h3 class="section-heading">Why Messenger?</h3>
-			  <p class="section-description">Access new depths with conversational commerce and information exchange. Express your perfect communications with text, images, and web redirects at the moment someone is interested in your products or services. It's a natural extension of yourself to a whole new audience!</p>
+			  <p class="section-description">Access new depths with conversational commerce and information exchange.<br/><small>Express your perfect communications with text, images, and web redirects at the moment someone is interested in your products or services. It's a natural extension of yourself to a whole new audience!</small></p>
 			  <div class="row">
 			    <div class="one-half column category">
 			      <img class="u-max-full-width" src="images/placeholder.png">
