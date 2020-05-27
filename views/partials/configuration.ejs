@@ -35,7 +35,7 @@
 		<a class="button button-primary" href="javascript:void(0)" id="2">CONTINUE</a>
 	</form>
 	<script type="text/javascript">
-		$('#2').on('click', function() {
+		$('#2').off().on('click', function() {
 			var dict = {
 				appId: $('#appId').val(),
 				pageId: $('#pageId').val(),

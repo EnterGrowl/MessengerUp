@@ -25,7 +25,7 @@
 			$('#defaults').show()
 		}
 
-		$('.add').on('click', function() {
+		$('.add').off().on('click', function() {
 			var name = $('#view').val()
 		  	if (!isUniqueName(name)) {
 		  		alert('Please use unique names for all your views:', name)
@@ -36,7 +36,7 @@
 			if (!err) window.viewNames.push(name.replace('"', '\''))
 		})
 
-		$('#4').on('click', function() {
+		$('#4').off().on('click', function() {
 			$('#create').hide()
 			$('#amend').show()
 			initAmend()

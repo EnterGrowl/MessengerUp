@@ -1,0 +1,26 @@
+<div id="results" hidden>
+	<form>
+		<h5>YOUR RESULTS</h5>
+		<p><small>Save this JSON file for upload to the builder!</small></p>
+		<pre id="json">
+		</pre>
+	</form>
+	<div class="row">
+		<a class="button button-primary" href="javascript:void(0)" onclick="downloadMessengerJSON()">DOWNLOAD</a>
+	</div>
+	<script type="text/javascript">
+		function setOnscreenJSON() {
+			$('#json').text(JSON.stringify(window.finalJSON, null, 4))
+		}
+
+		function downloadMessengerJSON(){
+			var data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.finalJSON, null, 4))
+			var downloadAnchorNode = document.createElement('a')
+			downloadAnchorNode.setAttribute('href', data)
+			downloadAnchorNode.setAttribute('download', 'messenger.json')
+			document.body.appendChild(downloadAnchorNode)
+			downloadAnchorNode.click()
+			downloadAnchorNode.remove()
+		}
+	</script>
+</div>

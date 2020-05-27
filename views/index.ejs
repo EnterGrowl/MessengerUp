@@ -140,10 +140,10 @@
 			  <p class="section-description">Access new depths with conversational commerce and information exchange.<br/><small>Express your perfect communications with text, images, and web redirects at the moment someone is interested in your products or services. It's a natural extension of yourself to a whole new audience!</small></p>
 			  <div class="row">
 			    <div class="one-half column category">
-			      <img class="u-max-full-width" src="images/placeholder.png">
+			      <img class="u-max-full-width" src="images/splash_a.jpg">
 			    </div>
 			    <div class="one-half column category">
-			      <img class="u-max-full-width" src="images/placeholder.png">
+			      <img class="u-max-full-width" src="images/splash_b.jpg">
 			    </div>
 			  </div>
 			</div>
@@ -155,12 +155,16 @@
 			<%include partials/defaults%>
 			<%include partials/create%>
 			<%include partials/amend%>
+			<%include partials/results%>
 		</div>
+		<footer class="page-footer">
+			Copyright 2020 MessengerUp<sup>&trade;</sup>
+		</footer>
 	</body>
 	<script type="text/javascript" src="/javascripts/draggable.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-		  	$('.start').on('click', function() {
+		  	$('.start').off().on('click', function() {
 		  		$('.section').hide()
 		  		$('#generator').show()
 		  	})

@@ -4,15 +4,15 @@
 	<form>
 		<div class="row">
 				<label for="intro"><small>WELCOME MESSAGE</small></label>
-				<input class="u-full-width" value="a" type="text" placeholder="Enter your welcome message here" id="intro">
+				<input class="u-full-width" type="text" placeholder="Enter your welcome message here" id="intro">
 		</div>
 		<div class="row">
 				<label for="fallback"><small>FALLBACK MESSAGE</small></label>
-				<input class="u-full-width" value="a" type="text" placeholder="Enter your fallback message here" id="fallback">
+				<input class="u-full-width" type="text" placeholder="Enter your fallback message here" id="fallback">
 		</div>
 		<div class="row">
 				<label for="greeting"><small>GREETING MESSAGE</small></label>
-				<input class="u-full-width" value="a" type="text" placeholder="Enter your greeting message here" id="greeting">
+				<input class="u-full-width" type="text" placeholder="Enter your greeting message here" id="greeting">
 		</div>
 		<div class="row">
 			<a class="button button-back" href="javascript:void(0)" onclick="back3()">BACK</a>
@@ -25,16 +25,15 @@
 			$('#configuration').show()
 		}
 
-		$('#3').on('click', function() {
+		$('#3').off().on('click', function() {
 			var defaults = {
-				intro: $('#intro').val(),
+				welcome: $('#intro').val(),
 				fallback: $('#fallback').val(),
 				greeting: $('#greeting').val(),
 			}
 
 			for (var key in defaults) {
 				if (!defaults[key]) {
-					console.log(defaults)
 					alert('Please enter a message for each defaults to continue.')
 					return
 				}

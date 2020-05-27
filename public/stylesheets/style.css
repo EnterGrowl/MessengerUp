@@ -1,6 +1,9 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 a {
@@ -18,6 +21,11 @@ a.disabled {
 	left: -3%;
   top: -34px;
   position: relative;
+}
+
+.page-footer {
+  text-align: right;
+  margin-top: 2rem;
 }
 
 [draggable] {
@@ -53,6 +61,7 @@ ul li.highlighted {
 .remList {
     float: left;
     width: -webkit-fill-available;
+    margin-bottom: 0!important;
 }
 
 .right {

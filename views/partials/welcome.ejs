@@ -10,7 +10,7 @@
 		<a class="button button-primary" href="javascript:void(0)" id="1">CONTINUE</a>
 	</form>
 	<script type="text/javascript">
-		$('#1').on('click', function(e) {
+		$('#1').off().on('click', function(e) {
 			$('#welcome').hide()
 			$('#configuration').show()
 		})

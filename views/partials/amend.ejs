@@ -40,7 +40,7 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="title (optional)" id="titleEl">
+					<input class="u-full-width" type="text" placeholder="title (optional, 20 chars max)" maxlength="20" id="titleEl">
 				</div>
 			</div>
 			<div class="row">
@@ -48,7 +48,7 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="subtitle (optional)" id="subtitleEl">
+					<input class="u-full-width" type="text" placeholder="subtitle (optional, 50 chars max)" maxlength="50" id="subtitleEl">
 				</div>
 			</div>
 			<div class="row">
@@ -103,6 +103,15 @@
 			for (var i = 0; i < window.viewNames.length; i++) {
 				viewAgg[window.viewNames[i]] = {elements: [], options: []}
 			}
+
+			for (var key in agg[1]) {
+				let value = agg[1][key]
+				viewAgg[key]['elements'].push({
+					type: 'text',
+					value: value
+				})
+			}
+
 			navigationSelectOptions()
 			initViewsList('listViews')
 			elementsForView()
@@ -112,15 +121,12 @@
 			$('#displayAdd').off().on('click', createElement)
 		}
 
-		// TODO: REMOVE (for dev only)
-		initAmend()
-
 		// set navigation options to select
 		function navigationSelectOptions() {
 			$('#destinationNames').html('')
 			$('#destinationNames').append('<option value="">Destinations</option>')
 			window.viewNames.forEach(function(v) {
-				if (v!==selectedView) {
+				if (v!==selectedView&&v!=='fallback') {
 					$('#destinationNames').append(`<option value="${v}">${v}</option>`)
 				}
 			})
@@ -158,7 +164,7 @@
 						return
 					}
 					if (currentValue === 'web') {
-						if (element.value.url!==window.agg[0].webURL) {
+						if (element.value.url.indexOf(window.agg[0].webURL) === -1) {
 							alert('Web URL must match configuration web URL from earlier setting, in the section named "Configuration".')
 							return							
 						}
@@ -178,7 +184,7 @@
 						alert('Please select a destination view from the dropdown.')
 						return
 					}
-					if (element.value.text.length >= 10) {
+					if (element.value.text.length > 10) {
 						alert('Large labels are automatically cropped by Messenger. Please shorten the length of your text to 10 or fewer characters for a better user experience.')
 						return
 					}
@@ -225,12 +231,12 @@
 						} else if (e.type === 'photo' || e.type === 'web') {
 							v = `<span class="li-sub-top">position: ${idx+1}</span><br><span class="el-type">${e.type} element</span><br>`
 							if (e.value.title) {
-								v += `title= ${e.value.title}<br>`
+								v += `title: "${e.value.title}"<br>`
 							}
 							if (e.value.subtitle) {
-								v += `subtitle= ${e.value.subtitle}<br>`
+								v += `subtitle: "${e.value.subtitle}"<br>`
 							}
-							v += `url= ${e.value.url}`
+							v += `url: ${e.value.url}`
 						} 
 						addRow('viewElements', v, false, e.type, idx)
 					}
@@ -321,7 +327,6 @@
 				viewAgg[selectedView]['elements'] = arr
 				elementsForView()
 			}
-			// $(ctx).closest('li').remove()
 		}
 
 		function back5() {
@@ -329,12 +334,51 @@
 			$('#create').show()
 		}
 
-		$('#5').on('click', function() {
+		$('#5').off().on('click', function() {
+			let cancel = false
+			for (var key in viewAgg) {
+				var dict = viewAgg[key]
+				if (!dict['elements'].length) {
+					let t = confirm('You have a view that is empty. Are you sure you want to continue?')
+					if (t) {
+						break
+					} else {
+						cancel = true
+						return
+					}
+				}
+			}
+
+			if (cancel) return
+
+			for (var key in viewAgg) {
+				var dict = viewAgg[key]
+				if (!dict['options'].length) {
+					let t = confirm('You have a view without destination options, and the user will have not have navigation options. Are you sure you want to continue?')
+					if (t) {
+						break
+					} else {
+						cancel = true
+						return
+					}
+				}
+			}
+
+			if (cancel) return
 
 			let t = confirm('Confirm if you are finished and want to proceed to build your source code.')
 
-			$('#create').hide()
-			$('#amend').show()
+			if (t) {
+				window.finalJSON = {
+					configs: agg[0],
+					views: viewAgg
+				}
+				agg.views = viewAgg
+				console.log(JSON.stringify(window.finalJSON, null, 4))
+				$('#amend').hide()
+				$('#results').show()
+				setOnscreenJSON()
+			}
 		})
 	</script>
 </div>
