@@ -1,4 +1,4 @@
-<div id="amend">
+<div id="amend" hidden>
 	<h5>AMEND YOUR VIEWS</h5>
 	<p><small>Fill out the details of your views with text, photo, web, and navigation elements. Select a view and add elements to it.</small></p>
 	<form>
@@ -305,9 +305,22 @@
 
 		// user removes element
 		function removeElement(ctx) {
-			console.log('in removeElement')
-			console.log($(ctx).hasClass('nav'))
-			console.log($(ctx).text())
+			var _arr;
+			if ($(ctx).hasClass('nav')) {
+				_arr = viewAgg[selectedView]['options']
+			} else {
+				_arr = viewAgg[selectedView]['elements']
+			}
+			var arr = JSON.parse(JSON.stringify(_arr))
+			var idx = Number.parseInt($($(ctx).closest('li')[0]).attr('data-id'))
+			arr.splice(idx, 1)
+			if ($(ctx).hasClass('nav')) {
+				viewAgg[selectedView]['options'] = arr
+				elementsForNavigation()
+			} else {
+				viewAgg[selectedView]['elements'] = arr
+				elementsForView()
+			}
 			// $(ctx).closest('li').remove()
 		}
 

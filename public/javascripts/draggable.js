@@ -85,6 +85,7 @@ function initDraggable(skipElements, skipNavigation) {
 			var objEnd = new Object(_arr[endIdx])
 			arr[startIdx] = objEnd
 			arr[endIdx] = objStart
+			console.log('arr len =', arr.length)
 			if (ctx === 'nav') {
 				viewAgg[selectedView]['options'] = arr
 			} else {
