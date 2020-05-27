@@ -14,10 +14,24 @@ a.disabled {
   border: 1px solid #ccc;
 }
 
-.nav {
+.topbar {
 	left: -3%;
-    top: -34px;
-    position: relative;
+  top: -34px;
+  position: relative;
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+.reorder {
+  cursor: move;
 }
 
 ul {
@@ -53,21 +67,29 @@ ul li.highlighted {
   border-radius: 5px!important
 }
 
+.button.button-primary {
+  background-color: #4267b2!important;
+  border-color: #4267b2!important;
+}
+
+
 .button.button-back {
-  color: white;
-  background-color: #f08a33;
-  border-color: #f08a33;
+  background-color: #f5f6f7;
+  border-color: #ccd0d5;
+  color: #4b4f56;
 }
 
 .button.button-go {
-    color: #FFF;
-    background-color: #1bab6f;
-    border-color: #1bab6f;
+  color: #FFF;
+  background-color: rgba(99,190,9,1);
+  border-color: rgba(99,190,9,1);
+  font-weight: 900;
+  font-size: large;
 }
 
 .bordered-div {
   padding: 2.2rem .5rem;
-  border: 1px solid #d0b78a;
+  border: 1px solid #ddd;
   border-top: 0;
   border-bottom: 0;
 }
@@ -81,7 +103,7 @@ ul li.highlighted {
 }
 
 .border-bottom {
-  border-bottom: 1px solid #d0b78a
+  border-bottom: 1px solid #ddd
 }
 
 .no-text-decoration {
@@ -90,4 +112,32 @@ ul li.highlighted {
 
 .hand-cursor {
   cursor: pointer
+}
+
+.mb13 {
+  margin-bottom: 13px!important
+}
+
+.mb8 {
+  margin-bottom: 8px!important
+}
+
+.mb0 {
+  margin-bottom: 1px!important
+}
+
+.el-type {
+  font-weight: 700
+}
+
+.li-sub-top {
+  color: black
+}
+
+.li-sub-mid {
+
+}
+
+.li-sub-bottom {
+
 }

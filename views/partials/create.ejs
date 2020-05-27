@@ -1,6 +1,6 @@
 <div id="create" hidden>
 	<h5>CREATE VIEWS</h5>
-	<p><small>We'll fill out the details of the views in the next steps.</small></p>
+	<p><small>Enter a name and add additional views. The welcome, fallback, and greetings are default views. We'll fill out the details of each view in the next steps.</small></p>
 	<form>
 		<div class="row">
 			<div class="ten columns">
@@ -10,21 +10,13 @@
 				<a href="javascript:void(0)" class="add button">+</a>
 			</div>
 		</div>
-		<div class="row">
-			<div class="one columns">
-				&nbsp;
-			</div>
-			<div class="ten columns">
-				<ul id="createViews"></ul>
-			</div>
+		<div class="bordered-div-margin-bottom row">
+			<h6 class="mb8">VIEWS</h6>
+			<ul id="createViews"></ul>
 		</div>
 		<div class="row">
-			<div class="three columns">
-				<a class="button button-back" href="javascript:void(0)" onclick="back4()">BACK</a>
-			</div>
-			<div class="two columns">
-				<a class="button button-primary" href="javascript:void(0)" id="4">CONTINUE</a>
-			</div>
+			<a class="button button-back" href="javascript:void(0)" onclick="back4()">BACK</a>
+			<a class="button button-primary" href="javascript:void(0)" id="4">CONTINUE</a>
 		</div>
 	</form>
 	<script type="text/javascript">
@@ -47,7 +39,7 @@
 		$('#4').on('click', function() {
 			$('#create').hide()
 			$('#amend').show()
-			initViewsList('listViews')
+			initAmend()
 		})
 	</script>
 </div>

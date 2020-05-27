@@ -8,13 +8,18 @@
 	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
   	</head>
   	<body>
-	    <div class="nav">
+	    <div class="topbar">
 			<h1><%= title %></h1>
 		    <p><%= subtitle %></p>
 	    </div>
 	    <script type="text/javascript">
 	    	window.agg = []
 	    	window.viewNames = ['welcome', 'fallback', 'greeting']
+			var destinations = []
+			var viewElements = []
+			var selectedView = 'welcome'
+			var currentValue = 'text'
+			var viewAgg = {}
 
 	    	function isUniqueName(text) {
 	    		if (text==='welcome'||
@@ -26,7 +31,7 @@
 	    		return false
 	    	}
 
-			function addRow(el, text, noRemove) {
+			function addRow(el, text, noRemove, className, idx) {
 			  if (text) {
 			  	if (noRemove) {
 			  		if (el === 'listViews') {
@@ -41,14 +46,19 @@
 			  		}
 			  	} else {
 			  		if (el === 'viewElements') {
-						$(`#${el}`).append(`<li class="no-margin-bottom"><a class="no-text-decoration" href="javascript:void(0)" onclick="changeElement(this)">${text}</a>&nbsp;<a class="hand-cursor red remove right">x</a></li>`)
+						$(`#${el}`).append(`<li data-id="${idx}" data-ctx="els" class="no-margin-bottom reorder" draggable="true"><a class="${className} hand-cursor red remove right">x</a><a class="no-text-decoration" href="javascript:void(0)" onclick="changeElement(this)">${text}</a></li>`)
 						    $('.remove').off().on('click', function() {
-								removeRow(this, true)
+								removeElement(this, true)
+						    })
+			  		} else if (el === 'navElements') {
+						$(`#${el}`).append(`<li data-id="${idx}" data-ctx="nav" class="no-margin-bottom reorder" draggable="true"><a class="${className} hand-cursor red remove right">x</a><a class="no-text-decoration" href="javascript:void(0)" onclick="changeNavElement(this)">${text}</a></li>`)
+						    $('.remove').off().on('click', function() {
+								removeElement(this, true)
 						    })
 			  		} else {
-						$(`#${el}`).append(`<li class="remList"><span class="val">${text}</span>&nbsp;<a class="button red right remove">x</a></li>`)
+						$(`#${el}`).append(`<li class="remList"><a class="button red right remove">x</a><span class="val">${text}</span></li>`)
 					    $('.remove').off().on('click', function() {
-							removeRow(this)
+							removeView(this)
 					    })
 			  		}
 			  	}
@@ -57,20 +67,15 @@
 			  return 1
 			}
 
-			function removeRow(that, viewElements) {
-				if (viewElements) {
-					console.log(that)
-					console.log('remove view element')
-				} else {
-					let name = $(that).closest('li').html()
-					let re = /class="val">(.*?)\<\//
-					name = re.exec(name)[1]
-					for (var i = window.viewNames.length - 1; i >= 0; i--) {
-						if (window.viewNames[i] === name)
-							window.viewNames.splice(i, 1)
-					}
+			function removeView(ctx) {
+				let name = $(ctx).closest('li').html()
+				let re = /class="val">(.*?)\<\//
+				name = re.exec(name)[1]
+				for (var i = window.viewNames.length - 1; i >= 0; i--) {
+					if (window.viewNames[i] === name)
+						window.viewNames.splice(i, 1)
 				}
-				$(that).closest('li').remove()
+				$(ctx).closest('li').remove()
 			}
 
 			function initViewsList(el) {
@@ -88,7 +93,7 @@
 			<div class="container">
 			  <div class="row">
 			    <div class="one-half column">
-			      <h4 class="hero-heading">Build and deploy your Messenger app in one place.</h4>
+			      <h4 class="hero-heading">Build and deploy your Messenger app in seconds.</h4>
 			      <a class="button button-primary start" href="javascript:void(0)">Get Started</a>
 			    </div>
 			    <div class="one-half column phones">
@@ -104,18 +109,18 @@
 			  <div class="row">
 			    <div class="one-third column value">
 			      <h2 class="value-multiplier">+100M</h2>
-			      <h5 class="value-heading">Users</h5>
-			      <p class="value-description">+20% of the population is here.</p>
+			      <h5 class="value-heading">US Users</h5>
+			      <p class="value-description">One in three people use Messenger. > 1 billion people worldwide.</p>
 			    </div>
 			    <div class="one-third column value">
-			      <h2 class="value-multiplier">2M</h2>
-			      <h5 class="value-heading"><small>Monthly</small> DLs</h5>
-			      <p class="value-description">Messenger is growing every day.</p>
+			      <h2 class="value-multiplier">+2M</h2>
+			      <h5 class="value-heading"><small>US DLs/ mo.</small></h5>
+			      <p class="value-description">It's growing fast, every day. 2 million downloads a month in the US.</p>
 			    </div>
 			    <div class="one-third column value">
 			      <h2 class="value-multiplier">FREE</h2>
 			      <h5 class="value-heading">No Excuses</h5>
-			      <p class="value-description">Get your source code right now!</p>
+			      <p class="value-description">Build your source code now. No experience necessary. Messenger up!</p>
 			    </div>
 			  </div>
 			</div>
@@ -124,7 +129,7 @@
 		<div class="section get-help">
 			<div class="container">
 			  <h3 class="section-heading">What are you waiting for?</h3>
-			  <p class="section-description">Your Facebook Messenger app is moments away.<br><br><small>MessengerUp™ is an open source project that generates your customized Facebook Messenger application, at no cost or fees, and deployment ready. The source code is yours to keep. Need someone to deploy it for you? We can do that too.</small></p>
+			  <p class="section-description">Your free Facebook Messenger app is moments away!<br><br><small>MessengerUp™ is an open source project that generates your customized Facebook Messenger application, at no cost or fees, and deployment ready. The source code is yours to keep. Need someone to deploy it for you? We can do that too.</small></p>
 			  <a class="button button-primary start" href="javascript:void(0)">Let's Go!</a>
 			</div>
 		</div>
@@ -152,6 +157,7 @@
 			<%include partials/amend%>
 		</div>
 	</body>
+	<script type="text/javascript" src="/javascripts/draggable.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 		  	$('.start').on('click', function() {

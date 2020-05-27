@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { 
   	title: 'Messenger⇪',
-  	subtitle: 'FREE Messenger app + source code. Turnkey deployments.'
+  	subtitle: 'FREE Messenger app. Turnkey deployments.'
   });
 });
 

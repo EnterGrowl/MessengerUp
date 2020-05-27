@@ -9,6 +9,7 @@
 		<div class="bordered-div row">
 			<div class="three columns">
 				<p><strong><small>ELEMENT</small></strong></p>
+				<p><small><span id="currentElement"></span></small></p>
 			</div>
 			<div class="three columns">
 				<a class="button button-go" href="javascript:void(0)" id="displayAdd">+</a>
@@ -25,15 +26,7 @@
 				<span class="label-body">Navigation Element</span>
 			</div>
 		</div>
-		<div class="bordered-div row">
-			<div class="one columns">
-				&nbsp;
-			</div>
-			<div class="ten columns">
-				<ul id="viewElements"></ul>
-			</div>
-		</div>
-		<div class="bordered-div border-bottom bordered-div-margin-bottom row" id="textOptions">
+		<div class="bordered-div row" id="textOptions">
 			<div class="one columns">
 				&nbsp;
 			</div>
@@ -41,7 +34,7 @@
 				<textarea placeholder="Enter text" class="u-full-width" id="textValue"></textarea>
 			</div>
 		</div>
-		<div class="bordered-div border-bottom bordered-div-margin-bottom" id="urlOptions" hidden>
+		<div class="bordered-div" id="urlOptions" hidden>
 			<div class="row">
 				<div class="one columns">
 					&nbsp;
@@ -67,46 +60,71 @@
 				</div>
 			</div>
 		</div>
-		<div class="bordered-div border-bottom bordered-div-margin-bottom" id="navigationOptions" hidden>
+		<div class="bordered-div" id="navigationOptions" hidden>
 			<div class="row">
 				<div class="one columns">
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<label for="destinationNames">Select destination</label>
-					<select class="u-full-width" id="destinationNames">
-						<option value="">Destinations</option>
-					</select>
+					<label for="optionText"><small>Destination text (what the user will see)</small></label>
+					<input class="u-full-width" type="text" maxlength="10" placeholder="Enter label (10 chars max)" id="optionText">
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<label for="destinationNames"><small>Select destination</small></label>
+					<select class="u-full-width" id="destinationNames"></select>
 				</div>
 			</div>
 		</div>
+		<div class="bordered-div border-bottom bordered-div-margin-bottom row">
+			<div class="one columns">
+				&nbsp;
+			</div>
+			<div class="ten columns">
+				<p class="mb0"><small><em>view elements</em></small></p>
+				<ul id="viewElements" class="mb13"></ul>
+				<p class="mb0"><small><em>navigation options</em></small></p>
+				<ul id="navElements"></ul>
+			</div>
+		</div>
 		<div class="row">
-			<div class="three columns">
-				<a class="button button-back" href="javascript:void(0)" onclick="back5()">BACK</a>
-			</div>
-			<div class="two columns">
-				<a class="button button-primary" href="javascript:void(0)" id="5">CONTINUE</a>
-			</div>
+			<a class="button button-back" href="javascript:void(0)" onclick="back5()">BACK</a>
+			<a class="button button-primary" href="javascript:void(0)" id="5">FINISH</a>
 		</div>
 	</form>
 	<script type="text/javascript">
 		// init
-		var destinations = []
-		var viewElements = []
-		var selectedView = 'welcome'
-		var currentValue = 'text'
-		var viewAgg = {}
-		for (var i = 0; i < window.viewNames.length; i++) {
-			viewAgg[window.viewNames[i]] = {elements: [], options: []}
-		}
-		window.viewNames.forEach(function(v) {
-			if (v!==selectedView) {
-				$('#destinationNames').append(`<option value="${v}">${v}</option>`)
+		function initAmend() {
+			for (var i = 0; i < window.viewNames.length; i++) {
+				viewAgg[window.viewNames[i]] = {elements: [], options: []}
 			}
-		})
-		initViewsList('listViews')
-		$($('.viewAmend').first()).addClass('highlighted')
-		elementsForView()
+			navigationSelectOptions()
+			initViewsList('listViews')
+			elementsForView()
+			elementsForNavigation()
+			$($('.viewAmend').first()).addClass('highlighted')
+			$('#currentElement').text(`(${selectedView.toUpperCase()})`)
+			$('#displayAdd').off().on('click', createElement)
+		}
+
+		// TODO: REMOVE (for dev only)
+		initAmend()
+
+		// set navigation options to select
+		function navigationSelectOptions() {
+			$('#destinationNames').html('')
+			$('#destinationNames').append('<option value="">Destinations</option>')
+			window.viewNames.forEach(function(v) {
+				if (v!==selectedView) {
+					$('#destinationNames').append(`<option value="${v}">${v}</option>`)
+				}
+			})
+		}
 
 		// add element to view
 		function createElement() {
@@ -115,8 +133,11 @@
 			var context = 'elements'
 			switch (currentValue) {
 				case 'text':
-					element.value = $('#textValue').val()
-					console.log(element)
+					element.value = $('#textValue').val().trim()
+					if (!element.value) {
+						alert('Please enter valid text to create this element.')
+						return
+					}
 					$('#textValue').val('')
 					break
 
@@ -127,6 +148,10 @@
 						title: $('#titleEl').val(),
 						subtitle: $('#subtitleEl').val(),
 						url: $('#urlEl').val().replace(/ /g, '').toLowerCase()
+					}
+					if (!element.value.url) {
+						alert('URL is necessary to add this element, try again.')
+						return						
 					}
 					if (!re.exec(element.value.url)) {
 						alert('URL must start with "https://", please try again.')
@@ -145,49 +170,93 @@
 
 				case 'nav':
 					context = 'options'
-					element.value = $('#destinationNames').val()
-					$('#destinationNames').prop('selectedIndex', 0)
+					element.value = {
+						destination: $('#destinationNames').val(),
+						text: $('#optionText').val().trim() || $('#destinationNames').val()
+					}
+					if (!element.value.destination) {
+						alert('Please select a destination view from the dropdown.')
+						return
+					}
+					if (element.value.text.length >= 10) {
+						alert('Large labels are automatically cropped by Messenger. Please shorten the length of your text to 10 or fewer characters for a better user experience.')
+						return
+					}
 					break
 
 				default:
 					console.log('default')
 					break
 			}
+			resetInputs()
 			viewAgg[selectedView][context].push(element)
 			elementsForView()
+			elementsForNavigation()
+			if (viewAgg[selectedView]['elements'].length > 1 && viewAgg[selectedView]['options'].length > 1) {
+				initDraggable()
+			} else if (viewAgg[selectedView]['elements'].length > 1) {
+				initDraggable(false, true)
+			} else if (viewAgg[selectedView]['options'].length > 1) {
+				initDraggable(true, false)
+			}
 		}
-
-		$('#displayAdd').off().on('click', createElement)
 
 		// reset all inputs
 		function resetInputs() {
-			$('textValue').val('')
-			$('title').val('')
-			$('subtitle').val('')
-			$('url').val('')
+			$('#textValue').val('')
+			$('#title').val('')
+			$('#subtitle').val('')
+			$('#url').val('')
+			$('#optionText').val('')
+			$('#destinationNames').prop('selectedIndex', 0)
 		}
 
 		// display elements of a view
 		function elementsForView() {
 			let dict = viewAgg[selectedView]
-			let elems = dict.elements.concat(dict.options)
+			let elems = dict.elements
 			$('#viewElements').html('')
 			if (elems.length) {
-				elems.forEach(function(e) {
-					console.log(e)
-					var v = ''
-					if (e.type === 'text' || e.type === 'nav') {
-						v = e.value
-					} else if (e.type === 'photo' || e.type === 'web') {
-						v = JSON.stringify(e.value, null, 4)
-					} 
-					addRow('viewElements', `${e.type}: ${v}`)
+				elems.forEach(function(e, idx) {
+					if (e.type&&e.type !== 'nav') {
+						var v = ''
+						if (e.type === 'text') {
+							v = `<span class="li-sub-top">position: ${idx+1}</span><br><span class="el-type">text element</span><br>"${e.value}"`
+						} else if (e.type === 'photo' || e.type === 'web') {
+							v = `<span class="li-sub-top">position: ${idx+1}</span><br><span class="el-type">${e.type} element</span><br>`
+							if (e.value.title) {
+								v += `title= ${e.value.title}<br>`
+							}
+							if (e.value.subtitle) {
+								v += `subtitle= ${e.value.subtitle}<br>`
+							}
+							v += `url= ${e.value.url}`
+						} 
+						addRow('viewElements', v, false, e.type, idx)
+					}
 				})
 			} else {
 				// none created
-				addRow('viewElements', 'This view has no elements', true)
+				addRow('viewElements', 'There are no view elements', true)
 			}
 		}
+
+		// display navigation elements
+		function elementsForNavigation() {
+			let dict = viewAgg[selectedView]
+			let elems = dict.options
+			$('#navElements').html('')
+			if (elems.length) {
+				elems.forEach(function(e, idx) {
+					if (e.type&&e.type === 'nav') {
+						addRow('navElements', `<span class="li-sub-top">position: ${idx+1}</span><br><span class="li-sub-mid">to: ${e.value.destination}</span><br><span class="li-sub-bottom">label: "${e.value.text}"</span>`, false, 'nav', idx)
+					}
+				})
+			} else {
+				// none created
+				addRow('navElements', 'There are no navigation options', true)
+			}
+		}		
 
 		// shows input options
 		function elementSelect(radio, elName) {
@@ -198,8 +267,12 @@
 					$('#navigationOptions').hide()
 					$('#textOptions').show()
 					break
-				case 'photo':
+				
 				case 'web':
+					if (!window.agg[0]['webURL']) {
+						alert('Web URL is missing, please configure it on the screen named "Configuration" to create this element.')
+					}
+				case 'photo':
 					$('#textOptions').hide()
 					$('#navigationOptions').hide()
 					$('#urlOptions').show()
@@ -215,10 +288,13 @@
 		// user changes view to amend els
 		function switchView(view) {
 			selectedView = view
+			$('#currentElement').text(`(${selectedView.toUpperCase()})`)
+			navigationSelectOptions()
 			$('input[type=radio][name=element][value=text]').prop('checked', true)
 			elementSelect(null, 'text')
 			resetInputs()
 			elementsForView()
+			elementsForNavigation()
 		}
 
 		// edit previously made element
@@ -227,12 +303,22 @@
 			// switch on name
 		}
 
+		// user removes element
+		function removeElement(ctx) {
+			console.log('in removeElement')
+			console.log($(ctx).hasClass('nav'))
+			console.log($(ctx).text())
+			// $(ctx).closest('li').remove()
+		}
+
 		function back5() {
 			$('#amend').hide()
 			$('#create').show()
 		}
 
 		$('#5').on('click', function() {
+
+			let t = confirm('Confirm if you are finished and want to proceed to build your source code.')
 
 			$('#create').hide()
 			$('#amend').show()
