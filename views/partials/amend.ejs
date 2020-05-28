@@ -56,7 +56,15 @@
 					&nbsp;
 				</div>
 				<div class="ten columns">
-					<input class="u-full-width" type="text" placeholder="url" id="urlEl">
+					<input class="u-full-width" type="text" placeholder="url link of image (https only)" id="urlImage">
+				</div>
+			</div>
+			<div class="row" id="urlElHolder" hidden>
+				<div class="one columns">
+					&nbsp;
+				</div>
+				<div class="ten columns">
+					<input class="u-full-width" type="text" placeholder="whitelisted url destination (https only, required)" id="urlEl">
 				</div>
 			</div>
 		</div>
@@ -134,7 +142,6 @@
 
 		// add element to view
 		function createElement() {
-			console.log('in createElement')
 			var element = { type: currentValue }
 			var context = 'elements'
 			switch (currentValue) {
@@ -153,25 +160,30 @@
 					element.value = {
 						title: $('#titleEl').val(),
 						subtitle: $('#subtitleEl').val(),
-						url: $('#urlEl').val().replace(/ /g, '').toLowerCase()
+						url: $('#urlEl').val().replace(/ /g, '').toLowerCase(),
+						image: $('#urlImage').val().replace(/ /g, '').toLowerCase()
 					}
-					if (!element.value.url) {
-						alert('URL is necessary to add this element, try again.')
+					if ((currentValue === 'web'&&!element.value.url)||(currentValue === 'photo'&&!element.value.image)) {
+						alert('URL link is necessary to add this element, try again.')
 						return						
 					}
-					if (!re.exec(element.value.url)) {
+					if ((currentValue === 'web'&&!element.value.url)||(currentValue === 'photo'&&!element.value.image)) {
 						alert('URL must start with "https://", please try again.')
 						return
 					}
 					if (currentValue === 'web') {
-						if (element.value.url.indexOf(window.agg[0].webURL) === -1) {
-							alert('Web URL must match configuration web URL from earlier setting, in the section named "Configuration".')
-							return							
+						var approvedURLNotFound = true
+						for (var i = 0; i < window.agg[0].webURLs.length; i++) {
+							if (element.value.url.indexOf(window.agg[0].webURLs[i]) > -1) {
+								approvedURLNotFound = false
+								break
+							}
+						}
+						if (approvedURLNotFound) {
+							alert('Web link must be whitelisted under configuration web URL from earlier setting named "Configuration". Please go back and add URL to your configuration.')
+							return
 						}
 					}
-					$('#titleEl').val('')
-					$('#subtitleEl').val('')
-					$('#urlEl').val('')
 					break
 
 				case 'nav':
@@ -210,9 +222,10 @@
 		// reset all inputs
 		function resetInputs() {
 			$('#textValue').val('')
-			$('#title').val('')
-			$('#subtitle').val('')
-			$('#url').val('')
+			$('#titleEl').val('')
+			$('#subtitleEl').val('')
+			$('#urlEl').val('')
+			$('#urlImage').val('')
 			$('#optionText').val('')
 			$('#destinationNames').prop('selectedIndex', 0)
 		}
@@ -236,7 +249,13 @@
 							if (e.value.subtitle) {
 								v += `subtitle: "${e.value.subtitle}"<br>`
 							}
-							v += `url: ${e.value.url}`
+							if (e.value.image) {
+								v += `image: ${e.value.image}`
+							}
+							if (e.value.url) {
+								if (e.value.image) v += '<br>'
+								v += `link: ${e.value.url}`
+							}
 						} 
 						addRow('viewElements', v, false, e.type, idx)
 					}
@@ -267,6 +286,7 @@
 		// shows input options
 		function elementSelect(radio, elName) {
 			currentValue = elName || radio.value
+			$('#urlElHolder').hide()
 			switch (currentValue) {
 				case 'text':
 					$('#urlOptions').hide()
@@ -275,14 +295,16 @@
 					break
 				
 				case 'web':
-					if (!window.agg[0]['webURL']) {
+					if (!window.agg[0]['webURLs']) {
 						alert('Web URL is missing, please configure it on the screen named "Configuration" to create this element.')
 					}
+					$('#urlElHolder').show()
 				case 'photo':
 					$('#textOptions').hide()
 					$('#navigationOptions').hide()
 					$('#urlOptions').show()
 					break
+
 				case 'nav':
 					$('#textOptions').hide()
 					$('#urlOptions').hide()
@@ -374,7 +396,6 @@
 					views: viewAgg
 				}
 				agg.views = viewAgg
-				console.log(JSON.stringify(window.finalJSON, null, 4))
 				$('#amend').hide()
 				$('#results').show()
 				setOnscreenJSON()

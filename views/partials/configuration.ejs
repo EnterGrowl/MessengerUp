@@ -28,7 +28,7 @@
 				<input class="u-full-width" type="text" placeholder="1234567890" id="pageToken">
 			</div>
 			<div class="six columns">
-				<label for="webURL"><small>WEB URL (HTTPS)</small></label>
+				<label for="webURLs"><small>PERMITTED URLS <span class="teeny">COMMA SEPARATED</span></small></label>
 				<input class="u-full-width" type="text" placeholder="https://url" id="webURL">
 			</div>
 		</div>
@@ -42,13 +42,15 @@
 				verifyToken: $('#verifyToken').val(),
 				secret: $('#secret').val(),
 				pageToken: $('#pageToken').val(),
-				webURL: $('#webURL').val().replace(/ /g, '').toLowerCase(),
+				webURLs: $('#webURLs').val().toLowerCase().split(/,.*?/g).map(function(url){ if (url) return url.trim() }).filter(function(url) { if (url) return url }),
 			}
 
 			var re = /^https:\/\//
-			if (dict.webURL.trim() && !re.exec(dict.webURL)) {
-				alert('Web URL must start with "https://", please try again.')
-				return
+			for (var i = 0; i < dict.webURLs.length; i++) {
+				if (dict.webURLs[i].trim() && !re.exec(dict.webURLs[i])) {
+					alert('Web URL must start with "https://", please try again.')
+					return
+				}
 			}
 
 			window.agg[0] = dict
