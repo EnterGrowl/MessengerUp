@@ -6,9 +6,11 @@
 	    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	    <link rel="stylesheet" type="text/css" href="stylesheets/splash.css">
 	    <script type="text/javascript" src="javascripts/zepto.min.js"></script>
+	    <script type="text/javascript" src="javascripts/core.js"></script>
   	</head>
   	<body>
-	    <div class="topbar">
+  		<%include helpers/preloader%>
+	    <div class="topbar" id="topbar">
 			<h1><%= title %></h1>
 		    <p><%= subtitle %></p>
 	    </div>
@@ -157,7 +159,7 @@
 			<%include partials/amend%>
 			<%include partials/results%>
 		</div>
-		<footer class="page-footer">
+		<footer class="page-footer" id="footer">
 			Copyright 2020 MessengerUp<sup>&trade;</sup>
 		</footer>
 	</body>
