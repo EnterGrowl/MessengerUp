@@ -1,4 +1,5 @@
-<div id="results">
+<div id="results" hidden>
+	<a class="button hidden" href="#error" id="clickSystemError"></a>
 	<form id="step1">
 		<h5>ENTER YOUR EMAIL</h5>
 		<p><small>Please verify your identity to continue.</small></p>
@@ -10,15 +11,13 @@
 				<a class="button button-primary" href="javascript:void(0)" onclick="getEmail()">Ok</a>
 			</div>
 		</div>
-		<a class="button hidden" href="#error" id="clickSystemError"></a>
-		<a class="button hidden" href="#" id="resetError"></a>
 	</form>
 	<form id="step2" hidden>
 		<h5>VERIFY PIN</h5>
 		<p><small>An email was sent to you that has the PIN.</small></p>
 		<div class="row">
 			<div class="digits__container">
-				<p>Enter your pin</p>
+				<p>Enter your pin below</p>
 				<div class="digits">
 					<input type="text" class="digipin" id="digit-1" tabindex="1" data-id="1" />
 					<input type="text" class="digipin" id="digit-2" tabindex="2" data-id="2" />
@@ -28,10 +27,34 @@
 			</div>
 		</div>
 	</form>
-	<!-- <div class="row">
-		<a class="button button-primary" href="javascript:void(0)" onclick="downloadMessengerJSON()">DOWNLOAD</a>
-		<a class="button" href="#popup">Let me Pop up</a>
-	</div> -->
+	<form id="step3" hidden>
+		<h5>SELECT OPTION</h5>
+		<p><small>Choose your deployment option. Deploy now for $10 / month, cancel anytime.</small></p>
+		<div class="row">
+			<div class="one columns">
+				<p>&nbsp;</p>
+			</div>
+			<div class="ten columns">
+				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="one columns">
+				<p>&nbsp;</p>
+			</div>
+			<div class="ten columns">
+				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="sourceOnly()">SOURCE CODE ONLY, NO DEPLOYMENT</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="one columns">
+				<p>&nbsp;</p>
+			</div>
+			<div class="ten columns">
+				<a class="button u-full-width" href="#popup">ABOUT DEPLOYMENTS</a>
+			</div>
+		</div>
+	</form>
 	<div id="error" class="overlay">
 		<div class="popup">
 			<h2>Sorry!</h2>
@@ -43,16 +66,17 @@
 	</div>
 	<div id="popup" class="overlay">
 		<div class="popup">
-			<h2>Here i am</h2>
+			<h2>Deployments</h2>
 			<a class="close" href="#">&times;</a>
 			<div class="content">
-				Thank to pop me out of that button, but now i'm done so you can close this window.
+				The Facebook Messenger application needs to be hosted on a secure HTTPS connection to communicate with Facebook's API and end users. This requires migration of the source code, configuration, networking, and securing operations on server(s). In case you do not have access to these, we suggest you save time and money, and deploy with us!
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
-		$('#resetError').click()
 		let o = {}
+		let deployments = []
+		let repos = []
 		let defaultError = 'There was an error on our end, please try again at a later time.'
 		function getEmail() {
 			o.email = $('#getEmail').val()
@@ -72,7 +96,6 @@
 					$('#clickSystemError').click()
 				}
 			})
-
 		}
 
 		function verifyPIN() {
@@ -88,8 +111,11 @@
 			makeRequestWithHeaders('/verify', o, function(response) {
 				try {
 					if (response.status===200) {
-						// show options - deploy or get code
-						console.log(response)
+						setToken(response.token)
+						deployments = response.deployments
+						repos = response.repos
+						$('#step2').hide()
+						$('#step3').show()
 					} else {
 						let message = response.message ? response.message : defaultError
 						$('#errorMessage').text(message)
@@ -117,75 +143,4 @@
 		}
 	</script>
 
-	<script type="text/javascript">
-		var enableAutoSubmit = true
-
-		document.querySelectorAll('.digipin').forEach(ele => {
-		  ele.addEventListener('keyup', e => {
-		    if ([16].indexOf(e.keyCode) >= 0) return
-		    if ([37,39].indexOf(e.keyCode) < 0) {
-		      
-		      if (e.target.value.length === 1) {
-		        let nextId = +e.target.dataset.id + 1
-		        if (document.querySelector('#digit-' + nextId)) {
-		          document.querySelector('#digit-' + nextId).focus()   
-		        }
-		      }
-
-		      let ok = true
-		      document.querySelectorAll('.digipin').forEach(ele => {
-		        if (ele.value === '') {
-		          ok = false
-		        }
-		      })
-
-		      if (ok && enableAutoSubmit) {
-		        verifyPIN()
-		      }
-		    }
-		  })
-		  ele.addEventListener('focus', e => {
-		    let currentId = +e.target.dataset.id
-		    
-		    let moveTo = null
-		    for(let i = (currentId - 1); i > 0; i--) {
-		      if (document.querySelector('#digit-' + i)) {
-		        if (document.querySelector('#digit-' + i).value === '') {
-		           moveTo = i
-		        }
-		      }
-		    }
-		    if (moveTo) {
-		      document.querySelector('#digit-' + moveTo).focus()  
-		    }
-		  })
-		})
-
-		window.addEventListener('keydown', e => {
-		  if ([16].indexOf(e.keyCode) >= 0) return
-		  if (e.keyCode === 8) {
-		    e.preventDefault()
-		    if (e.target.value !== '') {
-		      e.target.value = '';
-		    } else {
-		      let prevId = +e.target.dataset.id - 1
-		      if (document.querySelector('#digit-' + prevId)) {
-		        document.querySelector('#digit-' + prevId).value = ''
-		        document.querySelector('#digit-' + prevId).focus()
-		      }
-		    }
-		  } else if (e.keyCode === 37 && !e.shiftKey) {
-		    let id = +e.target.dataset.id - 1
-		    if (document.querySelector('#digit-' + id)) {
-		      let val = +document.querySelector('#digit-' + id).value
-		      document.querySelector('#digit-' + id).focus()
-		    }
-		  } else if (e.keyCode === 39 && !e.shiftKey) {
-		    let id = +e.target.dataset.id + 1
-		    if (document.querySelector('#digit-' + id)) {
-		      document.querySelector('#digit-' + id).focus()
-		    }
-		  }
-		})
-	</script>
 </div>

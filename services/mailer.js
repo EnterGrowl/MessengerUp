@@ -61,14 +61,14 @@ exports.verifyPIN = function(email, pin, cb) {
     fs.readFile(filepath, 'utf-8', function(err, file) {
         if (err) return cb(err)
         let options = {
-            title: 'Your verification PIN',
+            title: 'Verification PIN',
             subtitle: pin
         }
         let html = ejs.render(file, options)
         let text = `Your verification PIN is ${pin}`
         return doSendEmail({
             to: [email],
-            subject: 'Please validate your account',
+            subject: 'Your login PIN',
             html: html,
             text: text
         }, cb)

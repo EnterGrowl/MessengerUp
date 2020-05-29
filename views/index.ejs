@@ -4,14 +4,13 @@
 	    <title><%= title %></title>
 	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
 	    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
-	    <link rel="stylesheet" type="text/css" href="stylesheets/splash.css">
 	    <script type="text/javascript" src="javascripts/zepto.min.js"></script>
 	    <script type="text/javascript" src="javascripts/core.js"></script>
   	</head>
   	<body>
   		<%include helpers/preloader%>
 	    <div class="topbar" id="topbar">
-			<h1><%= title %></h1>
+			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
 		    <p><%= subtitle %></p>
 	    </div>
 	    <script type="text/javascript">
@@ -99,8 +98,8 @@
 			      <a class="button button-primary start" href="javascript:void(0)">Get Started</a>
 			    </div>
 			    <div class="one-half column phones">
-			      <img class="phone" src="images/iphone.png">
-			      <img class="phone" src="images/iphone.png">
+			      <img class="phone" src="images/iphone_a.png">
+			      <img class="phone" src="images/iphone_b.png">
 			    </div>
 			  </div>
 			</div>
@@ -139,7 +138,7 @@
 		<div class="section categories">
 			<div class="container">
 			  <h3 class="section-heading">Why Messenger?</h3>
-			  <p class="section-description">Access new depths with conversational commerce and information exchange.<br/><small>Express your perfect communications with text, images, and web redirects at the moment someone is interested in your products or services. It's a natural extension of yourself to a whole new audience!</small></p>
+			  <p class="section-description">CONVERSATIONAL COMMERCE &amp; INFORMATION EXCHANGE<br/><small>Express perfect communications with text, images, and web redirects. Explain your products and services in the detail you intend. Create transactions from the chat in real time! It's a natural extension of yourself to a whole new audience.</small></p>
 			  <div class="row">
 			    <div class="one-half column category">
 			      <img class="u-max-full-width" src="images/splash_a.jpg">
@@ -164,6 +163,7 @@
 		</footer>
 	</body>
 	<script type="text/javascript" src="/javascripts/draggable.js"></script>
+	<script type="text/javascript" src="/javascripts/pin.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 		  	$('.start').off().on('click', function() {

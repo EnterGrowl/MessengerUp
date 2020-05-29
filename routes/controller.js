@@ -17,7 +17,7 @@ const Util = require('../lib/util')
 exports.splash = function(req, res, next) {
 	res.render('index', { 
 		title: 'Messenger⇪',
-		subtitle: 'FREE Messenger app. Turnkey deployments.'
+		subtitle: 'FREE Messenger app. Deploy in seconds.'
 	})
 }
 
@@ -29,13 +29,13 @@ exports.email = function(req, res, next) {
 	*/
 	let email = Util.formatEmail(req.body.email)
 	User.userFromEmail(email, function(err, user) {
-		if (err) return Util.systemError(res)
+		if (err) return Util.systemError(err, res)
 		if (!user) {
 			user = new User({email: email})
 		} 
 		let pin = user.setPIN()
 		Mailer.verifyPIN(email, pin, function(err) {
-			if (err) return Util.systemError(res)
+			if (err) return Util.systemError(err, res)
 			return res.json({
 				status:200
 			})
@@ -48,7 +48,7 @@ exports.verify = function(req, res, next) {
 	let pin = req.body.pin
 	let email = Util.formatEmail(req.body.email)
 	User.userFromEmail(email, function(err, user) {
-		if (err||!user) return Util.systemError(res)
+		if (err||!user) return Util.systemError(err, res)
 		if (user.pin!==pin) {
 			return Util.verificationError(res)
 		}

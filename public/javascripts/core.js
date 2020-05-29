@@ -7,7 +7,7 @@ makeRequestWithHeaders = function(url, body, cb) {
     preloader.show()
     var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP")
     xhr.open(method, url, true)
-    var token = window.localStorage.getItem('token')||'null'   
+    var token = getToken()
     xhr.setRequestHeader("Authorization", ('Bearer ' + token))
     if (body) {
         xhr.setRequestHeader("Content-type","application/json")
@@ -33,4 +33,12 @@ xhrResponseFormat = function(xhr) {
     }
 
     return response
+}
+
+setToken = function(token) {
+    localStorage.setItem('token', token)
+}
+
+getToken = function() {
+    localStorage.getItem('token')
 }
