@@ -417,6 +417,10 @@ div.digits {
   color: #4267b2;
 }
 
+.dark-text{
+  color: #333;
+}
+
 .strong{
   font-weight: 700;
 }

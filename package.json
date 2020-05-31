@@ -15,6 +15,9 @@
     "http-errors": "~1.6.3",
     "mongoose": "^5.9.16",
     "morgan": "~1.9.1",
-    "randomatic": "^3.1.1"
+    "passport": "^0.4.1",
+    "passport-http-bearer": "^1.0.1",
+    "randomatic": "^3.1.1",
+    "stripe": "^8.56.0"
   }
 }

@@ -29,7 +29,20 @@
 	</form>
 	<form id="step3" hidden>
 		<h5>SELECT OPTION</h5>
-		<p><small>Choose your deployment option. Deploy now for $10 / month, cancel anytime.</small></p>
+		<p><small>Choose your deployment option. Cancel anytime.</small> <a href="#options"><i class="dark-text fa fa-question-circle"></i></a></p>
+		<div class="row" id="accountType" hidden>
+			<div class="one columns">
+				<p>&nbsp;</p>
+			</div>
+			<div class="ten columns">
+				<label for="userType"><small>What kind of entity are you?</small></label>
+				<select class="u-full-width" id="userType">
+			        <option value="">Your account type</option>
+			        <option value="basic">Personal or small business</option>
+			        <option value="extended">Business with > 10 employees</option>
+				</select>
+			</div>
+		</div>
 		<div class="row">
 			<div class="one columns">
 				<p>&nbsp;</p>
@@ -51,7 +64,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<a class="button u-full-width" href="#popup">ABOUT DEPLOYMENTS</a>
+				<a class="button u-full-width" href="#deployments">ABOUT DEPLOYMENTS</a>
 			</div>
 		</div>
 	</form>
@@ -64,7 +77,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="popup" class="overlay">
+	<div id="deployments" class="overlay">
 		<div class="popup">
 			<h2>Deployments</h2>
 			<a class="close" href="#">&times;</a>
@@ -73,8 +86,18 @@
 			</div>
 		</div>
 	</div>
+	<div id="options" class="overlay">
+		<div class="popup">
+			<h2>Options</h2>
+			<a class="close" href="#">&times;</a>
+			<div class="content">
+				Select the deployment option to get your Messenger application to a live HTTPS destination. Individuals and small businesses with ten or fewer employees will be charged $15/mo. and businesses with more than ten employees will be charged $30/mo. There is no fee associated with the non-deployment option.
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript">
 		let o = {}
+		let checkout = {}
 		let deployments = []
 		let repos = []
 		let defaultError = 'There was an error on our end, please try again at a later time.'
@@ -116,6 +139,9 @@
 						repos = response.repos
 						$('#step2').hide()
 						$('#step3').show()
+						if (!response.type) {
+							$('#accountType').show()
+						}
 					} else {
 						let message = response.message ? response.message : defaultError
 						$('#errorMessage').text(message)
@@ -126,6 +152,34 @@
 					$('#clickSystemError').click()
 				}
 			})
+		}
+
+		function deploy() {
+			// collect payment information, and create subscription
+			// build chatbot from window.finalJSON
+			// deploy chatbot
+			// display list of chatbots deployed + metrics
+			o.type = $('#userType').val()
+			// get session token and create session
+			makeRequestWithHeaders('/api/checkout', o, function(response) {
+				console.log(response)
+			})
+
+		}
+
+		function sourceOnly() {
+			// send data structure (window.finalJSON)
+			// build chatbot, client downloads or notifies user
+			// display list of chatbots available to view / download source code
+			var zip_file_path = "" //put inside "" your path with file.zip
+			var zip_file_name = "" //put inside "" file name or something
+			var a = document.createElement("a");
+			document.body.appendChild(a);
+			a.style = "display: none";
+			a.href = zip_file_path;
+			a.download = zip_file_name;
+			a.click();
+			document.body.removeChild(a);
 		}
 
 		function setOnscreenJSON() {

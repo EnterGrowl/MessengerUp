@@ -6,13 +6,32 @@
  *
  */
 
+require('dotenv').config()
 const ejs = require('ejs')
+const secrets = require('../.secrets.json')
+const secretKey = secrets['STRIPE'][process.env.MODE]['PRIVATE']
+const prices = secrets['STRIPE'][process.env.MODE]['PRICE']
+const url = secrets['URL'][process.env.MODE]
+const stripe = require('stripe')(secretKey)
 const Auth = require('./auth')
 const Mailer = require('../services/mailer')
 const User = require('../models/user').User
 const Repo = require('../models/repo').Repo
 const Deploy = require('../models/deploy').Deploy
 const Util = require('../lib/util')
+
+function assets(_id, cb) {
+	Repo.find({user: _id}, function(err, repos) {
+		repos = repos || []
+		Deploy.find({user: _id}, function(err, deploys) {
+			deploys = deploys || []
+			cb({
+				repos: repos,
+				deploys: deploys
+			})
+		})
+	})
+}
 
 exports.splash = function(req, res, next) {
 	res.render('index', { 
@@ -52,21 +71,62 @@ exports.verify = function(req, res, next) {
 		if (user.pin!==pin) {
 			return Util.verificationError(res)
 		}
-		Repo.find({user: user._id}, function(err, repos) {
-			repos = repos || []
-			Deploy.find({user: user._id}, function(err, deploys) {
-				deploys = deploys || []
-		        Auth.tokenForUser(user._id, function(err, token) {
-		            if (err) return Util.systemError(res)
-		            var data = token.toObject()
-		            res.json({
-		            	status: 200,
-		            	repos: repos,
-		            	deployments: deploys,
-		            	token: data.token
-		            })
-		        })
-			})
+		assets(user._id, function(_assets) {
+			let repos = _assets.repos
+			let deploys = _assets.deploys
+	        Auth.tokenForUser(user._id, function(err, token) {
+	            if (err) return Util.systemError(res)
+	            var data = token.toObject()
+	            res.json({
+	            	status: 200,
+	            	repos: repos,
+	            	deployments: deploys,
+	            	token: data.token,
+	            	type: user.type ? true : false
+	            })
+	        })
 		})
 	})
+}
+
+exports.checkout = function(req, res, next) {
+	console.log('foo')
+	// assets(req.user._id, function(_assets) {
+		// if (!req.user.type) {
+		// 	if (!req.body.type) {
+		// 		return Util.accountTypeError(res)
+		// 	}
+		// 	req.user.type = req.body.type
+		// 	req.save()
+		// }
+		// let type = req.user.type
+		// let bulk = _assets.deploys.length > 9
+		// let price = null
+		// if (type === 'extended') {
+		// 	price = prices['EXTENDED']
+		// } else {
+		// 	if (bulk) {
+		// 		price = prices['BULK']
+		// 	} else {
+		// 		price = prices['BASIC']
+		// 	}
+		// }
+		// stripe.checkout.sessions.create({
+		// 	payment_method_types: ['card'],
+		// 	line_items: [{
+		// 		price: price,
+		// 		quantity: 1,
+		// 	}],
+		// 	mode: 'subscription',
+		// 	success_url: `${url}/success/{CHECKOUT_SESSION_ID}`,
+		// 	cancel_url: `${url}/cancel`,
+		// }, function(err, session) {
+		// 	console.log(err, session)
+		// })
+	// })
+}
+
+exports.success = function(req, res, next) {
+	let sessionId = req.params.id
+
 }

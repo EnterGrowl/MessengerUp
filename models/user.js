@@ -15,6 +15,10 @@ var User = new mongoose.Schema({
         required: true,
         type: String
     },
+    type: {
+        enum: ['basic', 'extended'],
+        type: String
+    },
     created: {
         type: Date,
         default: new Date()
@@ -46,5 +50,8 @@ User.statics.userForDashboard = function(email, cb) {
         .populate('deploys repos')
         .exec(cb)
 }
+
+// before save, if not Stripe customer create
+// process.env.MODE
 
 exports.User = mongoose.model('User', User)

@@ -7,14 +7,27 @@
  */
 
 const Controller = require('./controller')
-const express = require('express');
-const router = express.Router();
 
-/* GET home page. */
-router.get('/', Controller.splash)
+module.exports = function(express, passport) {
+	let router = express.Router()
 
-/** POST get email */
-router.post('/email', Controller.email)
-router.post('/verify', Controller.verify)
+	router.all('/api/*',function(req, res, next) {
+	    next()
+	}, passport.authenticate('bearer', {
+	    session : false
+	}), function(req, res, next) {
+	    next()
+	})
 
-module.exports = router
+	/* GET home page. */
+	router.get('/', Controller.splash)
+	router.get('/success/:id', Controller.success)
+
+	/** POST get email */
+	router.post('/email', Controller.email)
+	router.post('/verify', Controller.verify)
+	router.post('/api/checkout', Controller.checkout)
+
+	return router
+
+}
