@@ -22,6 +22,7 @@ module.exports = function(express, passport) {
 	/* GET home page. */
 	router.get('/', Controller.splash)
 	router.get('/success/:id', Controller.success)
+	router.get('/api/dashboard', Controller.dashboard)
 
 	/** POST get email */
 	router.post('/email', Controller.email)

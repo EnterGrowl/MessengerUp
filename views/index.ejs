@@ -14,14 +14,22 @@
 			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
 		    <p><%= subtitle %></p>
 	    </div>
+		<div class="log-button login">
+			<a class="button button-success" href="javascript:void(0)" id="login">LOG IN</a>
+		</div>
 	    <script type="text/javascript">
 	    	window.agg = []
 	    	window.viewNames = ['welcome', 'fallback', 'greeting']
+	    	const defaultError = 'There was an error on our end, please try again at a later time.'
 			var destinations = []
 			var viewElements = []
 			var selectedView = 'welcome'
 			var currentValue = 'text'
 			var viewAgg = {}
+			var checkout = {}
+			var deployments = []
+			var repos = []
+			var o = {}
 
 	    	function isUniqueName(text) {
 	    		if (text==='welcome'||
@@ -157,7 +165,18 @@
 			<%include partials/defaults%>
 			<%include partials/create%>
 			<%include partials/amend%>
+			<%include partials/verify%>
 			<%include partials/results%>
+			<div id="dashboardPlace" hidden></div>
+			<div id="error" class="overlay">
+				<div class="popup">
+					<h2>Sorry!</h2>
+					<a class="close" href="#">&times;</a>
+					<div class="content">
+						<span id="errorMessage"></span>
+					</div>
+				</div>
+			</div>
 		</div>
 		<footer class="page-footer" id="footer">
 			Copyright 2020 MessengerUp<sup>&trade;</sup>
@@ -169,7 +188,40 @@
 		$(document).ready(function() {
 		  	$('.start').off().on('click', function() {
 		  		$('.section').hide()
+		  		$('.login').hide()
 		  		$('#generator').show()
+		  	})
+
+		  	$('.login').off().on('click', function() {
+		  		window.login = true
+		  		$('.login').hide()
+		  		let token = getToken()
+		  		$('.section').hide()
+		  		$('#generator').show()
+		  		if (token) {
+			  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
+			  			if (response.status === 200) {
+			  				if (response.html) {
+								$('#dashboardPlace').html(response.html)
+								$('#dashboardPlace').show()
+			  				} else {
+			  					setToken('')
+			  					alert('You do not have any deployments. Let\'s make one to get started!')
+			  					$('#verify').hide()
+			  					$('#welcome').show()
+			  				}
+			  			} else {
+			  				alert('Please verify your email to continue.')
+					  		$('#welcome').hide()
+					  		$('#verify').show()
+					  		initVerify()
+			  			}
+			  		})
+		  		} else {
+			  		$('#welcome').hide()
+			  		$('#verify').show()
+			  		initVerify()
+		  		}
 		  	})
 		});
 	</script>

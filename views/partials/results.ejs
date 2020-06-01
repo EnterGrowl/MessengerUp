@@ -1,33 +1,6 @@
 <div id="results" hidden>
-	<a class="button hidden" href="#error" id="clickSystemError"></a>
-	<form id="step1">
-		<h5>ENTER YOUR EMAIL</h5>
-		<p><small>Please verify your identity to continue.</small></p>
-		<div class="row">
-			<div class="eight columns">
-				<input class="u-full-width" type="email" placeholder="me@mailbox.com" id="getEmail" value="aug2uag@gmail.com">
-			</div>
-			<div class="four columns">
-				<a class="button button-primary" href="javascript:void(0)" onclick="getEmail()">Ok</a>
-			</div>
-		</div>
-	</form>
-	<form id="step2" hidden>
-		<h5>VERIFY PIN</h5>
-		<p><small>An email was sent to you that has the PIN.</small></p>
-		<div class="row">
-			<div class="digits__container">
-				<p>Enter your pin below</p>
-				<div class="digits">
-					<input type="text" class="digipin" id="digit-1" tabindex="1" data-id="1" />
-					<input type="text" class="digipin" id="digit-2" tabindex="2" data-id="2" />
-					<input type="text" class="digipin" id="digit-3" tabindex="3" data-id="3" />
-					<input type="text" class="digipin" id="digit-4" tabindex="4" data-id="4" />
-				</div>
-			</div>
-		</div>
-	</form>
-	<form id="step3" hidden>
+	<div id="stripeID" val="<%=stripe%>" hidden></div>
+	<form id="option" hidden>
 		<h5>SELECT OPTION</h5>
 		<p><small>Choose your deployment option. Cancel anytime.</small> <a href="#options"><i class="dark-text fa fa-question-circle"></i></a></p>
 		<div class="row" id="accountType" hidden>
@@ -48,7 +21,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
+				<a class="button button-primary u-full-width" href="javascript:void(0)" id="deployBtn" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
 			</div>
 		</div>
 		<div class="row">
@@ -68,15 +41,6 @@
 			</div>
 		</div>
 	</form>
-	<div id="error" class="overlay">
-		<div class="popup">
-			<h2>Sorry!</h2>
-			<a class="close" href="#">&times;</a>
-			<div class="content">
-				<span id="errorMessage"></span>
-			</div>
-		</div>
-	</div>
 	<div id="deployments" class="overlay">
 		<div class="popup">
 			<h2>Deployments</h2>
@@ -96,62 +60,15 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		let o = {}
-		let checkout = {}
-		let deployments = []
-		let repos = []
-		let defaultError = 'There was an error on our end, please try again at a later time.'
-		function getEmail() {
-			o.email = $('#getEmail').val()
-			$('#getEmail').val('')
-			makeRequestWithHeaders('/email', o, function(response) {
-				try {
-					if (response.status===200) {
-						$('#step1').hide()
-						$('#step2').show()
-					} else {
-						let message = response.message ? response.message : defaultError
-						$('#errorMessage').text(message)
-						$('#clickSystemError').click()
-					}
-				} catch(e) {
-					$('#errorMessage').text(defaultError)
-					$('#clickSystemError').click()
-				}
-			})
-		}
-
-		function verifyPIN() {
-			let d1 = $('#digit-1').val()
-			$('#digit-1').val('')
-			let d2 = $('#digit-2').val()
-			$('#digit-2').val('')
-			let d3 = $('#digit-3').val()
-			$('#digit-3').val('')
-			let d4 = $('#digit-4').val()
-			$('#digit-4').val('')
-			o.pin = d1 + d2 + d3 + d4
-			makeRequestWithHeaders('/verify', o, function(response) {
-				try {
-					if (response.status===200) {
-						setToken(response.token)
-						deployments = response.deployments
-						repos = response.repos
-						$('#step2').hide()
-						$('#step3').show()
-						if (!response.type) {
-							$('#accountType').show()
-						}
-					} else {
-						let message = response.message ? response.message : defaultError
-						$('#errorMessage').text(message)
-						$('#clickSystemError').click()
-					}
-				} catch(e) {
-					$('#errorMessage').text(defaultError)
-					$('#clickSystemError').click()
-				}
-			})
+		function initResults() {
+			stripe = null
+			try {
+				stripe = Stripe($('#stripeID').attr('val'))
+			} catch(e) {
+				alert('Deployments are not available at this time.')
+				$('#deployBtn').hide()
+			}
+			checkout = {}
 		}
 
 		function deploy() {
@@ -163,8 +80,22 @@
 			// get session token and create session
 			makeRequestWithHeaders('/api/checkout', o, function(response) {
 				console.log(response)
-			})
+				if (response.status === 200) {
+					stripe.redirectToCheckout({
+					  // Make the id field from the Checkout Session creation API response
+					  // available to this file, so you can provide it as parameter here
+					  // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+					  sessionId: response.session
+					}).then(function (result) {
+					  // If `redirectToCheckout` fails due to a browser or network
+					  // error, display the localized error message to your customer
+					  // using `result.error.message`.
+					  console.log(result)
+					});
+				} else {
 
+				}
+			})
 		}
 
 		function sourceOnly() {

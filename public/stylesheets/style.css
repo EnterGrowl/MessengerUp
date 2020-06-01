@@ -81,6 +81,12 @@ ul li.highlighted {
   color: #4b4f56;
 }
 
+.button.button-success {
+  background-color: #56953e;
+  border-color: #56953e;
+  color: white;
+}
+
 .button.button-go {
   color: #FFF;
   background-color: rgba(99,190,9,1);
@@ -428,4 +434,17 @@ div.digits {
 .up{
   top: -21px;
   position: relative;
+}
+
+.log-button {
+  position: absolute;
+  right: 0;
+  margin-right: 21px;
+  top: 0;
+  margin-top: 21px;
+}
+
+.button-red {
+  background-color: #ab1a2d;
+  color: white;
 }

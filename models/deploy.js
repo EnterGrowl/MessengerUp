@@ -13,6 +13,7 @@ var Deploy = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : 'User'
   },
+  url: String,
   created: {
     type: Date,
     default: new Date()

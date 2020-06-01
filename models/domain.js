@@ -8,28 +8,21 @@
 
 const mongoose = require('mongoose')
 
-var Cert = new mongoose.Schema({
-  user: {
+var Domain = new mongoose.Schema({
+  deploy: {
       type : mongoose.Schema.Types.ObjectId,
-      ref : 'User'
+      ref : 'Deploy'
   },
-  domains: {
-      type: [String],
-      default: []
-  },
-  created: {
-    type: Date,
-    default: new Date()
-  },
+  address: String,
 }, {
   versionKey: false
 })
 
-Cert.set('toObject', {
+Domain.set('toObject', {
   transform : function(doc, ret, options) {
     delete ret._id
-    delete ret.user
+    delete ret.deploy
   }
 });
 
-exports.Cert = mongoose.model('Cert', Cert)
+exports.Domain = mongoose.model('Domain', Domain)

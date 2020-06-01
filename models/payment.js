@@ -13,7 +13,7 @@ var Payment = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : 'User'
   },
-  customer: Object,
+  checkout: Object,
   created: {
     type: Date,
     default: new Date()
