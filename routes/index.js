@@ -28,6 +28,8 @@ module.exports = function(express, passport) {
 	router.post('/email', Controller.email)
 	router.post('/verify', Controller.verify)
 	router.post('/api/checkout', Controller.checkout)
+	router.post('/api/build', Controller.build)
+	router.post('/api/deploy', Controller.deploy)
 
 	return router
 

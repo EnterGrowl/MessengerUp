@@ -1,6 +1,6 @@
 <div id="results" hidden>
 	<div id="stripeID" val="<%=stripe%>" hidden></div>
-	<form id="option" hidden>
+	<form id="option">
 		<h5>SELECT OPTION</h5>
 		<p><small>Choose your deployment option. Cancel anytime.</small> <a href="#options"><i class="dark-text fa fa-question-circle"></i></a></p>
 		<div class="row" id="accountType" hidden>
@@ -60,7 +60,8 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		function initResults() {
+		function initResults(finalJSON) {
+			window.json = finalJSON
 			stripe = null
 			try {
 				stripe = Stripe($('#stripeID').attr('val'))
@@ -76,9 +77,9 @@
 			// build chatbot from window.finalJSON
 			// deploy chatbot
 			// display list of chatbots deployed + metrics
-			o.type = $('#userType').val()
+			window.json.type = $('#userType').val()
 			// get session token and create session
-			makeRequestWithHeaders('/api/checkout', o, function(response) {
+			makeRequestWithHeaders('/api/checkout', window.json, function(response) {
 				console.log(response)
 				if (response.status === 200) {
 					stripe.redirectToCheckout({
@@ -99,18 +100,17 @@
 		}
 
 		function sourceOnly() {
-			// send data structure (window.finalJSON)
-			// build chatbot, client downloads or notifies user
-			// display list of chatbots available to view / download source code
-			var zip_file_path = "" //put inside "" your path with file.zip
-			var zip_file_name = "" //put inside "" file name or something
-			var a = document.createElement("a");
-			document.body.appendChild(a);
-			a.style = "display: none";
-			a.href = zip_file_path;
-			a.download = zip_file_name;
-			a.click();
-			document.body.removeChild(a);
+			makeRequestWithHeaders('/api/build', window.json, function(response) {
+				// var zip_file_path = "" //put inside "" your path with file.zip
+				// var zip_file_name = "" //put inside "" file name or something
+				// var a = document.createElement("a");
+				// document.body.appendChild(a);
+				// a.style = "display: none";
+				// a.href = zip_file_path;
+				// a.download = zip_file_name;
+				// a.click();
+				// document.body.removeChild(a);
+			})
 		}
 
 		function setOnscreenJSON() {

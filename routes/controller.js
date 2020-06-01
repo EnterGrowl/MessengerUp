@@ -12,6 +12,7 @@ const secrets = require('../.secrets.json')
 const publicKey = secrets['STRIPE'][process.env.MODE]['PUBLIC']
 const secretKey = secrets['STRIPE'][process.env.MODE]['PRIVATE']
 const prices = secrets['STRIPE'][process.env.MODE]['PRICE']
+const path = require('path')
 const url = secrets['URL'][process.env.MODE]
 const stripe = require('stripe')(secretKey)
 const Auth = require('./auth')
@@ -179,4 +180,43 @@ exports.dashboard = function(req, res) {
 			return res.json({status: 200})
 		}
 	})
+}
+
+exports.build = function(req, res) {
+
+	let json = req.body
+	let repo = new Repo({
+		user: req.user._id,
+		json: json
+	})
+
+	Port(function(port) {
+		console.log('create on PORT:', port)
+		let deploy = new Deploy({
+			user: req.user._id,
+			port: port
+		})
+
+		let filepath = `./s${port}/messenger.json`
+		let directory = `./s${port}`
+		console.log(1)
+		Util.createSystemFolder(directory, function(err) {
+			if (err) return Util.systemError(res)
+			console.log(2)
+			Util.writeFile(filepath, JSON.stringify(json), function(err) {
+				if (err) return Util.systemError(res)
+				console.log(3)
+				// docker run --interactive --tty --rm -v ~/Desktop/myfoobar:/app/store ex0 /bin/sh
+				let command = `docker run -v ${directory}:/app/store ex0 -c "python app.py"`
+				Util.exec(command)
+				res.json({status: 200})
+			})
+		})
+	})
+}
+
+exports.deploy = function(req, res) {
+	let type = req.body.type
+	console.log(req.body)
+	
 }

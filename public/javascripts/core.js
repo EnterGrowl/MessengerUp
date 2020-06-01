@@ -17,6 +17,15 @@ makeRequestWithHeaders = function(url, body, cb) {
     }
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
+            if (this.status == 403) {
+                alert('Please log in to continue')
+                window.login = true
+                if (body) {
+                    localStorage.setItem('cached-object', JSON.stringify(body))
+                }
+                window.location.assign('/')
+                return
+            }
             preloader.hide()
             var response = xhrResponseFormat(xhr)
             if (cb) cb(response)

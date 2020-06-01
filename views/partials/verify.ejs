@@ -5,7 +5,7 @@
 		<p><small>Please verify your identity to continue.</small></p>
 		<div class="row">
 			<div class="eight columns">
-				<input class="u-full-width" type="email" placeholder="me@mailbox.com" id="getEmail" value="aug2uag@gmail.com">
+				<input class="u-full-width" type="email" placeholder="me@mailbox.com" id="getEmail">
 			</div>
 			<div class="four columns">
 				<a class="button button-primary" href="javascript:void(0)" onclick="getEmail()">Ok</a>
@@ -66,19 +66,19 @@
 			let d4 = $('#digit-4').val()
 			$('#digit-4').val('')
 			o.pin = d1 + d2 + d3 + d4
+			$('#step2').hide()
+			$('#verify').hide()
 			makeRequestWithHeaders('/verify', o, function(response) {
 				try {
 					if (response.status===200) {
 						setToken(response.token)
 						deployments = response.deployments
 						repos = response.repos
-						$('#step2').hide()
-						$('#verify').hide()
 						if (window.login) {
-							window.login = null
 							// request and replace innerHTML with dashboard
 					  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
 					  			if (response.status === 200) {
+					  				window.login = null
 					  				if (response.html) {
 										$('#dashboardPlace').html(response.html)
 										$('#dashboardPlace').show()
@@ -97,9 +97,9 @@
 					  			}
 					  		})
 						} else {
+							console.log('show option')
 							$('#verify').hide()
-							$('#option').show()
-							initResults()
+							$('#results').show()
 							if (!response.type) {
 								$('#accountType').show()
 							}
