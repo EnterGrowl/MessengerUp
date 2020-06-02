@@ -202,3 +202,9 @@ exports.build = function(req, res) {
 		})
 	})
 }
+
+exports.deploy = function(req, res) {
+	let type = req.body.type
+	console.log(req.body)
+	
+}
