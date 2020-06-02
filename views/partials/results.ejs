@@ -21,14 +21,6 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<a class="button button-primary u-full-width" href="javascript:void(0)" id="deployBtn" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
-			</div>
-		</div>
-		<div class="row">
-			<div class="one columns">
-				<p>&nbsp;</p>
-			</div>
-			<div class="ten columns">
 				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="sourceOnly()">SOURCE CODE ONLY, NO DEPLOYMENT</a>
 			</div>
 		</div>
@@ -72,44 +64,17 @@
 			checkout = {}
 		}
 
-		function deploy() {
-			// collect payment information, and create subscription
-			// build chatbot from window.finalJSON
-			// deploy chatbot
-			// display list of chatbots deployed + metrics
-			window.json.type = $('#userType').val()
-			// get session token and create session
-			makeRequestWithHeaders('/api/checkout', window.json, function(response) {
-				console.log(response)
-				if (response.status === 200) {
-					stripe.redirectToCheckout({
-					  // Make the id field from the Checkout Session creation API response
-					  // available to this file, so you can provide it as parameter here
-					  // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
-					  sessionId: response.session
-					}).then(function (result) {
-					  // If `redirectToCheckout` fails due to a browser or network
-					  // error, display the localized error message to your customer
-					  // using `result.error.message`.
-					  console.log(result)
-					});
-				} else {
-
-				}
-			})
-		}
-
 		function sourceOnly() {
 			makeRequestWithHeaders('/api/build', window.json, function(response) {
-				// var zip_file_path = "" //put inside "" your path with file.zip
-				// var zip_file_name = "" //put inside "" file name or something
-				// var a = document.createElement("a");
-				// document.body.appendChild(a);
-				// a.style = "display: none";
-				// a.href = zip_file_path;
-				// a.download = zip_file_name;
-				// a.click();
-				// document.body.removeChild(a);
+				if (response.status === 200) {
+					downloadFile(response.text, 'MessengerUp.zip', 'application/zip')
+					alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy.')
+					setTimeout(function() {
+						window.location.assign('/')
+					}, 4181)
+				} else {
+					alert('Sorry! Something went wrong and we are working on it right away. You can try again in a short time or please visit back later or email us (contact@messengerup.com).')
+				}
 			})
 		}
 

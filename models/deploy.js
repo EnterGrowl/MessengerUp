@@ -13,6 +13,10 @@ var Deploy = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : 'User'
   },
+  repo: {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'Repo'
+  },
   port: String,
   created: {
     type: Date,

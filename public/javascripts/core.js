@@ -18,8 +18,7 @@ makeRequestWithHeaders = function(url, body, cb) {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (this.status == 403) {
-                alert('Please log in to continue')
-                window.login = true
+                alert('Operation timeout. Please start again.')
                 if (body) {
                     localStorage.setItem('cached-object', JSON.stringify(body))
                 }
@@ -27,18 +26,21 @@ makeRequestWithHeaders = function(url, body, cb) {
                 return
             }
             preloader.hide()
-            var response = xhrResponseFormat(xhr)
+            var response = xhrResponseFormat(xhr, this.status)
             if (cb) cb(response)
         }
     }
 }
 
-xhrResponseFormat = function(xhr) {
+xhrResponseFormat = function(xhr, status) {
     var response
     try {
         response = JSON.parse(xhr.responseText)
     } catch (e) {
-        response = xhr.responseText
+        response = {
+            status: status,
+            text: xhr.responseText
+        }
     }
 
     return response
@@ -51,3 +53,16 @@ setToken = function(token) {
 getToken = function() {
     return localStorage.getItem('token')
 }
+
+downloadFile = function(file, name, type) {
+    var blob = null;
+    /** base64 to blob, else just blob */
+    var byteCharacters = atob(file);
+    var byteNumbers = new Array(byteCharacters.length);
+    for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    };
+    var byteArray = new Uint8Array(byteNumbers);
+    blob = new Blob([byteArray], {type: type});
+    saveAs(blob, name);
+};
