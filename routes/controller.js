@@ -8,11 +8,12 @@
 
 require('dotenv').config()
 const ejs = require('ejs')
+const fs = require('fs')
+const path = require('path')
 const secrets = require('../.secrets.json')
 const publicKey = secrets['STRIPE'][process.env.MODE]['PUBLIC']
 const secretKey = secrets['STRIPE'][process.env.MODE]['PRIVATE']
 const prices = secrets['STRIPE'][process.env.MODE]['PRICE']
-const path = require('path')
 const url = secrets['URL'][process.env.MODE]
 const stripe = require('stripe')(secretKey)
 const Auth = require('./auth')
@@ -183,40 +184,21 @@ exports.dashboard = function(req, res) {
 }
 
 exports.build = function(req, res) {
-
-	let json = req.body
-	let repo = new Repo({
-		user: req.user._id,
-		json: json
-	})
-
-	Port(function(port) {
-		console.log('create on PORT:', port)
-		let deploy = new Deploy({
-			user: req.user._id,
-			port: port
-		})
-
-		let filepath = `./s${port}/messenger.json`
-		let directory = `./s${port}`
-		console.log(1)
-		Util.createSystemFolder(directory, function(err) {
-			if (err) return Util.systemError(res)
-			console.log(2)
-			Util.writeFile(filepath, JSON.stringify(json), function(err) {
-				if (err) return Util.systemError(res)
-				console.log(3)
-				// docker run --interactive --tty --rm -v ~/Desktop/myfoobar:/app/store ex0 /bin/sh
-				let command = `docker run -v ${directory}:/app/store ex0 -c "python app.py"`
-				Util.exec(command)
-				res.json({status: 200})
-			})
+	Util.defaultPortConfig(req.user, req.body, function(err, build) {
+		if (err) return Util.systemError(err, res)
+		let _port = build.port
+		let _path = path.join(build.path, `${_port}.zip`)
+		fs.readFile(_path, 'base64', function(err, data) {
+			if (err) return Util.systemError(err, res)
+			// send zip file for download
+			res.set('Content-Type', 'application/zip')
+			res.set('Content-Disposition', 'attachment; filename=MessengerUp.zip');
+			res.set('Content-Length', data.length);
+			res.end(data, 'binary');
+			fs.rmdir(build.path, {
+				recursive: true,
+				maxRetries: 999999
+			}, Util.nonceFunc)
 		})
 	})
-}
-
-exports.deploy = function(req, res) {
-	let type = req.body.type
-	console.log(req.body)
-	
 }
