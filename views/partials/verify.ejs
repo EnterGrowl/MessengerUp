@@ -34,6 +34,22 @@
 			o = {}
 			deployments = []
 			repos = []
+			let authenticated = getAuthenticated()
+			if (authenticated==='true') {
+				resetAuthenticated()
+				if (!getToken()) return
+		  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
+		  			console.log(response)
+		  			if (response.status === 200) {
+		  				console.log('show options')
+						$('#verify').hide()
+						$('#results').show()
+						if (!response.type) {
+							$('#accountType').show()
+						}
+		  			}
+		  		}, skipPreloader)
+			}
 		}
 
 		function getEmail() {
@@ -76,9 +92,9 @@
 						repos = response.repos
 						if (window.login) {
 							// request and replace innerHTML with dashboard
+							window.login = null
 					  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
 					  			if (response.status === 200) {
-					  				window.login = null
 					  				if (response.html) {
 										$('#dashboardPlace').html(response.html)
 										$('#dashboardPlace').show()
@@ -87,11 +103,11 @@
 					  					// destroy token, alert, and display welcome
 					  					setToken('')
 					  					alert('You do not have any deployments. Let\'s make one to get started!')
+					  					setAuthenticated()
 					  					$('#verify').hide()
 					  					$('#welcome').show()
 					  				}
 					  			} else {
-					  				window.login = true
 							  		$('.login').hide()
 							  		$('#verify').show()
 					  			}

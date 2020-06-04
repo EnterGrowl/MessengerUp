@@ -15,10 +15,6 @@ var User = new mongoose.Schema({
         required: true,
         type: String
     },
-    type: {
-        enum: ['basic', 'extended'],
-        type: String
-    },
     created: {
         type: Date,
         default: new Date()
@@ -26,6 +22,10 @@ var User = new mongoose.Schema({
     pin: {
         type: String,
         default: new Date()
+    },
+    type: {
+        enum: ['basic', 'extended'],
+        type: String
     },
     lastVisited: {
         type: Date,

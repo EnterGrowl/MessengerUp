@@ -11,7 +11,7 @@ const createError = require('http-errors')
 const express = require('express')
 const passport = require('passport')
 // config passport bearer strategy
-require('./lib/auth')(passport)
+require('./services/auth')(passport)
 const path = require('path')
 const logger = require('morgan')
 const router = require('./routes/index')

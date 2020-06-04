@@ -13,6 +13,11 @@ var Payment = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : 'User'
   },
+  deployment: {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'Deploy'
+  },
+  id: String,
   checkout: Object,
   created: {
     type: Date,

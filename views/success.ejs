@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title><%= title %></title>
+	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
+	    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	    <script type="text/javascript" src="/javascripts/zepto.min.js"></script>
+	    <script type="text/javascript" src="/javascripts/core.js"></script>
+
+		<meta property="og:url" content="https://messengerup.com" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="MessengerUp™" />
+		<meta property="og:description" content="Seconds away from your own Messenger application." />
+		<meta property="og:image" content="https://messengerup.s3.amazonaws.com/fbm.logo.png" />
+		<meta property="fb:app_id" content="807024186370687" />
+  	</head>
+  	<body>
+  		<%include helpers/preloader%>
+	    <div class="topbar" id="topbar">
+			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
+		    <p><%= subtitle %></p>
+	    </div>
+
+	    <div id="sessionID" val="<%=session%>" hidden></div>
+	    <div id="token" val="<%=token%>" hidden></div>
+		<div class='container' id='generator'>
+			<div>
+				<form id="option">
+					<h5>SUCCESS!</h5>
+					<p><small>Your deployment is being prepared. You will be notified by email momentarily with the URL to your Messenger application. Please configure your Facebook dashboard with this URL value.</small></a></p>
+
+					<p><small>Your deployment will also be available for you to manage and monitor here after you Login from the home page.</small></p>
+				</form>
+
+				<script type="text/javascript">
+					console.log('foo')
+					let session = $('#sessionID').attr('val')
+					setToken($('#token').attr('val'))
+					$('#token').remove()
+					let json = getCache()
+					console.log(session, json)
+					setTimeout(function() {
+						console.log('make request')
+						makeRequestWithHeaders('/api/deploy', {
+							session: session,
+							json: json
+						}, function(response) {
+							console.log(response)
+							if (response.status === 200) {
+							}
+						})
+					}, 484)
+				</script>
+			</div>
+		</div>
+		<footer class="page-footer" id="footer">
+			Copyright 2020 MessengerUp<sup>&trade;</sup>
+		</footer>
+	</body>
+</html>

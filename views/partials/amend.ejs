@@ -391,13 +391,13 @@
 			let t = confirm('Confirm if you are finished and want to proceed to build your source code.')
 
 			if (t) {
+				$('#amend').hide()
+				$('#verify').show()
 				initVerify()
 				initResults({
 					configs: agg[0],
 					views: viewAgg
 				})
-				$('#amend').hide()
-				$('#verify').show()
 			}
 		})
 	</script>

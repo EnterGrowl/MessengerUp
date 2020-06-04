@@ -61,13 +61,14 @@
 	</div>
 	<script type="text/javascript">
 		function initResults(finalJSON) {
+			setCache(finalJSON)
 			window.json = finalJSON
 			stripe = null
 			try {
 				stripe = Stripe($('#stripeID').attr('val'))
 			} catch(e) {
-				alert('Deployments are not available at this time.')
 				$('#deployBtn').hide()
+				alert('Deployments are not available at this time.')
 			}
 			checkout = {}
 		}
@@ -80,7 +81,6 @@
 			window.json.type = $('#userType').val()
 			// get session token and create session
 			makeRequestWithHeaders('/api/checkout', window.json, function(response) {
-				console.log(response)
 				if (response.status === 200) {
 					stripe.redirectToCheckout({
 					  // Make the id field from the Checkout Session creation API response
@@ -94,7 +94,7 @@
 					  console.log(result)
 					});
 				} else {
-
+					alert(defaultError)
 				}
 			})
 		}
@@ -103,7 +103,9 @@
 			makeRequestWithHeaders('/api/build', window.json, function(response) {
 				if (response.status === 200) {
 					downloadFile(response.text, 'MessengerUp.zip', 'application/zip')
-					alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. If you would like us to deploy your app for use right now select "DEPLOY NOW".')
+					setTimeout(function() {
+						alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. If you would like us to deploy your app for use right now select "DEPLOY NOW".')
+					}, 1481)
 				} else {
 					alert('Sorry! Something went wrong and we are working on it right away. You can try again in a short time or please visit back later or email us (contact@messengerup.com).')
 				}

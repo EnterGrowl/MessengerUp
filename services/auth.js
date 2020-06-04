@@ -9,7 +9,7 @@
 const BearerStrategy = require('passport-http-bearer').Strategy
 const Token = require('../models/token').Token
 const User = require('../models/user').User
-const Util = require('./util')
+const Util = require('../lib/util')
 
 module.exports = function(passport) {
     passport.use('bearer', new BearerStrategy(function(token, callback) {

@@ -17,13 +17,15 @@ const prices = secrets['STRIPE'][process.env.MODE]['PRICE']
 const url = secrets['URL'][process.env.MODE]
 const stripe = require('stripe')(secretKey)
 const Auth = require('./auth')
+const Util = require('../lib/util')
+const Cert = require('../services/certificate')
 const Mailer = require('../services/mailer')
+const Process = require('../services/process')
 const User = require('../models/user').User
 const Payment = require('../models/payment').Payment
 const Repo = require('../models/repo').Repo
 const Deploy = require('../models/deploy').Deploy
-const Port = require('../lib/port')
-const Util = require('../lib/util')
+
 
 function assets(_id, cb) {
 	Repo.find({user: _id}, function(err, repos) {
@@ -96,10 +98,11 @@ exports.verify = function(req, res, next) {
 }
 
 exports.checkout = function(req, res, next) {
+	let _res = res
 	assets(req.user._id, function(_assets) {
 		if (!req.user.type) {
 			if (!req.body.type) {
-				return Util.accountTypeError(res)
+				return Util.accountTypeError(_res)
 			}
 			req.user.type = req.body.type
 			req.user.save()
@@ -124,35 +127,48 @@ exports.checkout = function(req, res, next) {
 			}],
 			mode: 'subscription',
 			success_url: `${url}/success/{CHECKOUT_SESSION_ID}`,
-			cancel_url: `${url}/cancel`,
+			cancel_url: `${url}`,
+			customer_email: req.user.email
 		}, function(err, checkout) {
-			console.log(err, checkout)
-			if (err) return Util.systemError(res)
+			if (err) return Util.systemError(_res)
 			let payment = new Payment({
 				user: req.user._id,
+				id: checkout.id,
 				checkout: checkout
 			})
-			res.json({
-				status: 200,
-				session: checkout.id
+			payment.save(function(err) {
+				if (err) return Util.systemError(_res)
+				res.json({
+					status: 200,
+					session: checkout.id
+				})
 			})
 		})
 	})
 }
 
 exports.success = function(req, res, next) {
-	let sessionId = req.params.id
-	Payment({'checkout.id': sessionId}, function(err, checkout) {
-		if (checkout) {
-			// authenticate
+	let session = req.params.id
+	// let session = 'req.params.id'
+	// User.findOne({}, function(err, user) {
 
-			// display deployments
-
-
-		} else {
-			return Util.systemError(res)
-		}
+	Auth.tokenForUser(user._id, function(err, token) {
+		if (err) return Util.successError(session, 'token create fail', res)
+		Payment.findOne({id: session}, function(err, checkout) {
+			if (err||!checkout) return res.redirect('/')
+			res.render('success', {
+				session: session,
+				title: 'Messenger⇪',
+				subtitle: 'FREE Messenger app. Deploy in seconds.',
+				token: token.token
+			})
+		})
 	})
+	
+
+
+	// })
+
 }
 
 exports.dashboard = function(req, res) {
@@ -204,7 +220,49 @@ exports.build = function(req, res) {
 }
 
 exports.deploy = function(req, res) {
-	let type = req.body.type
-	console.log(req.body)
-	
+	console.log('deploy 1')
+	const _res = res
+	const session = req.body.session
+	const json = req.body.json
+	const user = req.user
+	const that = this
+	Util.defaultPortConfig(user, json, function(err, build) {
+		if (err) return Util.buildError(session, 'CREATE PORT', _res)
+		console.log('deploy 2')
+		let _port = build.port
+		let _path = build.path
+		let deploy = new Deploy({
+			user: user._id,
+			repo: build.repo,
+			port: _port
+		})
+		console.log('deploy 3')
+		deploy.save(function(err) {
+			if (err) return Util.buildError(session, `DEPLOY SAVE PORT ${_port}`, _res)
+			console.log('deploy 4')
+			Cert.add(_port, function(err) {
+				if (err) return Util.buildError(session, err, _res)
+				console.log('deploy 5')
+				let destination = path.join(secrets['DEPLOY'][process.env.MODE]['PATH'], _port)
+				let origin = path.join(_path, _port)
+				console.log(`move from ${origin} to ${destination}`)
+				fs.rename(origin, destination, function(err) {
+					if (err) console.error(err)
+					if (err) return Util.buildError(session, `MV BUILD PORT ${_port}`, _res)
+					console.log('deploy 6')
+					Process.start(destination, function(err) {
+						if (err) return Util.buildError(session, `PROCESS START PORT ${_port}`, _res)
+						console.log('deploy 7')
+						fs.rmdir(_path, {
+							recursive: true,
+							maxRetries: 999999
+						}, function() {
+							console.log('deploy 8')
+							return res.sendStatus(200)
+						})
+					})
+				})
+			})
+		})
+	})
 }
