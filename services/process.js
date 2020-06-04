@@ -17,7 +17,7 @@ exports.nginx = function(cb) {
 
 exports.start = function(_path, cb) {
 	console.log('start on path = ', _path)
-	let command = `cd ${_path} && pm2 start ecosystem.config.js`
+	let command = `cd ${_path} && npm install && pm2 start ecosystem.config.js`
 	let that = this
 	return Util.exec(command, function(err) {
 		if (err) return that.restart(_path, cb)

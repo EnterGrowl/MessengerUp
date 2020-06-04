@@ -19,7 +19,6 @@ makeRequestWithHeaders = function(url, body, cb, skip) {
         if (xhr.readyState === 4) {
             if (this.status == 403) {
                 setToken('')
-                window.location.assign('/')
                 alert('Operation timeout. Please start again.')
                 return
             }

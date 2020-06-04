@@ -151,11 +151,10 @@ exports.success = function(req, res, next) {
 	let session = req.params.id
 	// let session = 'req.params.id'
 	// User.findOne({}, function(err, user) {
-
-	Auth.tokenForUser(user._id, function(err, token) {
-		if (err) return Util.successError(session, 'token create fail', res)
-		Payment.findOne({id: session}, function(err, checkout) {
-			if (err||!checkout) return res.redirect('/')
+	Payment.findOne({id: session}, function(err, checkout) {
+		if (err) return Util.successError(session, `payment fetch fail for ${session}`, res)
+		Auth.tokenForUser(checkout.user, function(err, token) {
+			if (err) return Util.successError(session, 'token create fail', res)
 			res.render('success', {
 				session: session,
 				title: 'Messenger⇪',
@@ -164,11 +163,6 @@ exports.success = function(req, res, next) {
 			})
 		})
 	})
-	
-
-
-	// })
-
 }
 
 exports.dashboard = function(req, res) {
