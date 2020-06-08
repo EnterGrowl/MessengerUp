@@ -1,4 +1,4 @@
-<div id="verify" hidden>
+<div id="verify" class="onboard" hidden>
 	<a class="button hidden" href="#error" id="clickSystemError"></a>
 	<form id="step1">
 		<h5>ENTER YOUR EMAIL</h5>
@@ -44,9 +44,6 @@
 		  				console.log('show options')
 						$('#verify').hide()
 						$('#results').show()
-						if (!response.type) {
-							$('#accountType').show()
-						}
 		  			}
 		  		}, skipPreloader)
 			}
@@ -113,12 +110,8 @@
 					  			}
 					  		})
 						} else {
-							console.log('show option')
 							$('#verify').hide()
 							$('#results').show()
-							if (!response.type) {
-								$('#accountType').show()
-							}
 						}
 					} else {
 						let message = response.message ? response.message : defaultError

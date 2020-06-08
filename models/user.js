@@ -23,10 +23,6 @@ var User = new mongoose.Schema({
         type: String,
         default: new Date()
     },
-    type: {
-        enum: ['basic', 'extended'],
-        type: String
-    },
     lastVisited: {
         type: Date,
         default: new Date()

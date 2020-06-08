@@ -1,4 +1,4 @@
-<div id="results" hidden>
+<div id="results" class="onboard" hidden>
 	<div id="stripeID" val="<%=stripe%>" hidden></div>
 	<form id="option">
 		<h5>SELECT OPTION</h5>
@@ -21,6 +21,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
+				<label for="deployBtn">$5 per month, cancel anytime</label>
 				<a class="button button-primary u-full-width" href="javascript:void(0)" id="deployBtn" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
 			</div>
 		</div>
@@ -29,7 +30,8 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="sourceOnly()">SOURCE CODE ONLY, NO DEPLOYMENT</a>
+				<label for="noncedownload">$1 one time fee</label>
+				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="sourceOnly()" id="noncedownload">SOURCE CODE ONLY, NO DEPLOYMENT</a>
 			</div>
 		</div>
 		<div class="row">
@@ -78,7 +80,7 @@
 			// build chatbot from window.finalJSON
 			// deploy chatbot
 			// display list of chatbots deployed + metrics
-			window.json.type = $('#userType').val()
+			window.json.type = 'basic'
 			// get session token and create session
 			makeRequestWithHeaders('/api/checkout', window.json, function(response) {
 				if (response.status === 200) {
@@ -96,15 +98,16 @@
 				} else {
 					alert(defaultError)
 				}
-			})
+			}, true)
 		}
 
 		function sourceOnly() {
+			window.json.type = 'download'
 			makeRequestWithHeaders('/api/build', window.json, function(response) {
 				if (response.status === 200) {
 					downloadFile(response.text, 'MessengerUp.zip', 'application/zip')
 					setTimeout(function() {
-						alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. If you would like us to deploy your app for use right now select "DEPLOY NOW".')
+						alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. Log back in anytime to download.')
 					}, 1481)
 				} else {
 					alert('Sorry! Something went wrong and we are working on it right away. You can try again in a short time or please visit back later or email us (contact@messengerup.com).')

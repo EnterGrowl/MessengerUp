@@ -35,26 +35,33 @@
 			<div>
 				<form id="option">
 					<h5>SUCCESS!</h5>
-					<p><small>Your deployment is being prepared. You will be notified by email momentarily with the URL to your Messenger application. Please configure your Facebook dashboard with this URL value.</small></a></p>
+					<p><small>Your deployment is being prepared. You will be notified by email when your deployment becomes available on the dashboard. The next time you visit us, you will be redirected to the dashboard.</small></a></p>
 
-					<p><small>Your deployment will also be available for you to manage and monitor here after you Login from the home page.</small></p>
+					<p><small>Your application will now be available for review and approval by Facebook to publish to the public.</small></p>
 				</form>
 
 				<script type="text/javascript">
-					console.log('foo')
 					let session = $('#sessionID').attr('val')
 					setToken($('#token').attr('val'))
 					$('#token').remove()
 					let json = getCache()
 					console.log(session, json)
 					setTimeout(function() {
-						console.log('make request')
 						makeRequestWithHeaders('/api/deploy', {
 							session: session,
 							json: json
 						}, function(response) {
-							console.log(response)
 							if (response.status === 200) {
+								setTimeout(function() {
+									makeRequestWithHeaders('/api/deploy', {
+										session: session,
+										json: json
+									}, function(response) {
+										if (response.status === 200) {
+											
+										}
+									})
+								}, 484)
 							}
 						})
 					}, 484)

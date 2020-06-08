@@ -1,5 +1,8 @@
-makeRequestWithHeaders = function(url, body, cb, skip) {
-    if (url.indexOf('/api/')>-1&&!window.localStorage.getItem('token')) return
+makeRequestWithHeaders = function(url, body, cb, skip, options) {
+    if (url.indexOf('/api/')>-1&&!window.localStorage.getItem('token')) {
+        if (cb) cb('')
+        return
+    }
     var method = body&&Object.keys(body).length ? 'POST' : 'GET'
     console.log(new Array(40).join('* '))
     console.log('makeRequestWithHeaders', method, 'to:', url)
@@ -17,14 +20,18 @@ makeRequestWithHeaders = function(url, body, cb, skip) {
     }
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-            if (this.status == 403) {
-                setToken('')
-                alert('Operation timeout. Please start again.')
+            var response = xhrResponseFormat(xhr, this.status)
+            if (!skip) preloader.hide()
+            if (options && options.noauth) {
+                if (cb) cb(response)
                 return
             }
-            if (!skip) preloader.hide()
-            var response = xhrResponseFormat(xhr, this.status)
-            if (cb) cb(response)
+            if (this.status === 403) {
+                setToken('')
+                alert('Authentication failed. Please try again.')
+            }
+            
+            if (cb) return cb(response)
         }
     }
 }
@@ -90,4 +97,40 @@ downloadFile = function(file, name, type) {
     var byteArray = new Uint8Array(byteNumbers)
     blob = new Blob([byteArray], {type: type})
     saveAs(blob, name)
+}
+
+start = function(show) {
+    $('.splash').hide()
+    $('.log-button').hide()
+    $('#generator').show()
+}
+
+begin = function(noLogin) {
+    $('#generator').hide()
+    $('.log-button').hide()
+    $('.splash').show()
+    if (!noLogin) $('.login').show()
+}
+
+showVerify = function() {
+    $('.onboard').hide()
+    $('#verify').show()
+}
+
+showWelcome = function() {
+    $('.onboard').hide()
+    $('#welcome').show()   
+}
+
+showDashboard = function(html) {
+    if (html) {
+        var newHTML = document.open('text/html', 'replace'); 
+        newHTML.write(html); 
+        newHTML.close(); 
+    } else {
+        $('.onboard').hide()
+        $('.log-button').hide()
+        $('#dashboardPlace').show()
+        $('.logout').show()
+    }
 }

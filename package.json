@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "async": "^3.2.0",
     "aws-sdk": "^2.686.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -19,6 +20,7 @@
     "passport-http-bearer": "^1.0.1",
     "random-js": "^2.1.0",
     "randomatic": "^3.1.1",
+    "rimraf": "^3.0.2",
     "stripe": "^8.56.0",
     "unique-string": "^2.0.0"
   }

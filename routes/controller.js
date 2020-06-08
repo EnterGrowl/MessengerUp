@@ -7,9 +7,12 @@
  */
 
 require('dotenv').config()
+const async = require('async')
 const ejs = require('ejs')
 const fs = require('fs')
 const path = require('path')
+const rimraf = require("rimraf")
+const print = require('../lib/print')
 const secrets = require('../.secrets.json')
 const publicKey = secrets['STRIPE'][process.env.MODE]['PUBLIC']
 const secretKey = secrets['STRIPE'][process.env.MODE]['PRIVATE']
@@ -25,7 +28,7 @@ const User = require('../models/user').User
 const Payment = require('../models/payment').Payment
 const Repo = require('../models/repo').Repo
 const Deploy = require('../models/deploy').Deploy
-
+const Dashboard = require('../bin/controllers/dashboard')
 
 function assets(_id, cb) {
 	Repo.find({user: _id}, function(err, repos) {
@@ -39,6 +42,8 @@ function assets(_id, cb) {
 		})
 	})
 }
+
+exports.dashboard = Dashboard
 
 exports.splash = function(req, res, next) {
 	res.render('index', { 
@@ -100,44 +105,43 @@ exports.verify = function(req, res, next) {
 exports.checkout = function(req, res, next) {
 	let _res = res
 	assets(req.user._id, function(_assets) {
-		if (!req.user.type) {
-			if (!req.body.type) {
-				return Util.accountTypeError(_res)
-			}
-			req.user.type = req.body.type
-			req.user.save()
-		}
-		let type = req.user.type
-		let bulk = _assets.deploys.length > 9
+		let type = req.body.type
 		let price = null
-		if (type === 'extended') {
-			price = prices['EXTENDED']
+		let mode = ''
+
+		if (type === 'download') {
+			price = prices['DOWNLOAD']
+			mode = 'payment'
 		} else {
-			if (bulk) {
-				price = prices['BULK']
-			} else {
+			mode = 'subscription'
+			if (type=='basic') {
 				price = prices['BASIC']
+			} else {
+				// TODO (ENHANCED, PREMIUM, ENTERPRISE)
 			}
 		}
+		console.log('type', type)
+		console.log('price', price)
 		stripe.checkout.sessions.create({
 			payment_method_types: ['card'],
 			line_items: [{
 				price: price,
 				quantity: 1,
 			}],
-			mode: 'subscription',
+			mode: mode,
 			success_url: `${url}/success/{CHECKOUT_SESSION_ID}`,
 			cancel_url: `${url}`,
 			customer_email: req.user.email
 		}, function(err, checkout) {
-			if (err) return Util.systemError(_res)
+			if (err) return Util.systemError(err, _res)
 			let payment = new Payment({
 				user: req.user._id,
 				id: checkout.id,
-				checkout: checkout
+				checkout: checkout,
+				type: type
 			})
 			payment.save(function(err) {
-				if (err) return Util.systemError(_res)
+				if (err) return Util.systemError(err, _res)
 				res.json({
 					status: 200,
 					session: checkout.id
@@ -149,12 +153,12 @@ exports.checkout = function(req, res, next) {
 
 exports.success = function(req, res, next) {
 	let session = req.params.id
-	// let session = 'req.params.id'
-	// User.findOne({}, function(err, user) {
 	Payment.findOne({id: session}, function(err, checkout) {
 		if (err) return Util.successError(session, `payment fetch fail for ${session}`, res)
 		Auth.tokenForUser(checkout.user, function(err, token) {
 			if (err) return Util.successError(session, 'token create fail', res)
+			checkout.deployed = true
+			checkout.save()
 			res.render('success', {
 				session: session,
 				title: 'Messenger⇪',
@@ -162,34 +166,6 @@ exports.success = function(req, res, next) {
 				token: token.token
 			})
 		})
-	})
-}
-
-exports.dashboard = function(req, res) {
-	assets(req.user._id, function(assets) {
-		var truthy = false
-		for (var key in assets) {
-			if (assets[key].length) {
-				truthy = true
-			}
-		}
-
-		if (truthy) {
-			// render dashboard and send {status: html:}
-    		let filepath = path.resolve('../views/partials/dashboard.ejs')
-		    fs.readFile(filepath, 'utf-8', function(err, file) {
-		        if (err) return Util.systemError(err, res)
-		        let html = ejs.render(file, {
-		            deployments: assets.deploys
-		        })
-		        return res.json({
-		        	status: 200,
-		        	html: html
-		        })
-			})
-		} else {
-			return res.json({status: 200})
-		}
 	})
 }
 
@@ -214,49 +190,69 @@ exports.build = function(req, res) {
 }
 
 exports.deploy = function(req, res) {
-	console.log('deploy 1')
 	const _res = res
 	const session = req.body.session
 	const json = req.body.json
 	const user = req.user
 	const that = this
-	Util.defaultPortConfig(user, json, function(err, build) {
-		if (err) return Util.buildError(session, 'CREATE PORT', _res)
-		console.log('deploy 2')
-		let _port = build.port
-		let _path = build.path
-		let deploy = new Deploy({
-			user: user._id,
-			repo: build.repo,
-			port: _port
-		})
-		console.log('deploy 3')
-		deploy.save(function(err) {
-			if (err) return Util.buildError(session, `DEPLOY SAVE PORT ${_port}`, _res)
-			console.log('deploy 4')
-			Cert.add(_port, function(err) {
-				if (err) return Util.buildError(session, err, _res)
-				console.log('deploy 5')
-				let destination = path.join(secrets['DEPLOY'][process.env.MODE]['PATH'], _port)
-				let origin = path.join(_path, _port)
-				console.log(`move from ${origin} to ${destination}`)
-				fs.rename(origin, destination, function(err) {
-					if (err) console.error(err)
-					if (err) return Util.buildError(session, `MV BUILD PORT ${_port}`, _res)
-					console.log('deploy 6')
-					Process.start(destination, function(err) {
-						if (err) return Util.buildError(session, `PROCESS START PORT ${_port}`, _res)
-						console.log('deploy 7')
-						fs.rmdir(_path, {
-							recursive: true,
-							maxRetries: 999999
-						}, function() {
-							console.log('deploy 8')
-							return res.sendStatus(200)
-						})
-					})
-				})
+
+	async.waterfall([
+	    function(callback) {
+	    	print(5, 'step 1  ')
+	    	Util.defaultPortConfig(user, json, function(err, build) {
+	    		if (err) return callback(Util.buildError(session, 'CREATE PORT', _res))
+				console.log('build step 1')
+	    		console.log(build)
+				callback(null, build)
+	    	})
+	    },
+	    function(build, callback) {
+	    	print(5, 'step 2  ')
+	    	console.log(build)
+	    	console.log(callback)
+			let deploy = new Deploy({
+				user: user._id,
+				repo: build.repo,
+				port: build.port
 			})
-		})
-	})
+			deploy.save(function(err) {
+				if (err) return callback(
+					Util.buildError(session, `DEPLOY SAVE PORT ${build.port}`, _res))
+				callback(null, build)
+			})
+	    },
+	    function(build, callback) {
+	    	print(5, 'step 3  ')
+	    	Cert.add(build.port, function(err) {
+	    		if (err) return callback(Util.buildError(session, err, _res))
+		        callback(null, build)
+		    })
+	    },
+	    function(build, callback) {
+	    	print(5, 'step 4  ')
+			build.origin = path.join(build.path, build.port)
+			build.destination = path.join(secrets['DEPLOY'][process.env.MODE]['PATH'], build.port)
+	    	fs.rename(build.origin, build.destination, function(err) {
+	    		if (err) return callback(Util.buildError(session, `MV BUILD PORT ${_port}`, _res))
+		        callback(null, build)
+		    })
+	    },
+	    function(build, callback) {
+	    	print(5, 'step 5  ')
+	    	Process.start(build.destination, function(err) {
+	    		if (err) return callback(Util.buildError(session, `PROCESS START PORT ${build.port}`, _res))
+	    		callback(null, build)
+	    	})
+	    },
+	    function(build, callback) {
+	    	print(5, 'step 6  ')
+	    	console.log(build.path)
+			rimraf(build.path, callback)
+	    }
+
+	], function (err, result) {
+	    if (!err) {
+	    	console.log('build finished!', new Date())
+	    }
+	});
 }
