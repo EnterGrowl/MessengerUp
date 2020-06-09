@@ -203,47 +203,12 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 		  	$('.start').off().on('click', function() {
-		  		start()
+		  		initSequence()
 		  	})
 
-		  	$('.login').off().on('click', function() {
-		  		window.login = true
-		  		let token = getToken()
-		  		start()
-		  		if (token) {
-		  			console.log(new Array(10).join('ii '))
-		  			authLogin(true, {})
-		  		} else {
-			  		showVerify()
-			  		initVerify()
-		  		}
-		  	})
+		  	$('.login').off().on('click', authLogin)
 
-		  	function authLogin(redirect, options) {
-		  		console.log('make authLogin')
-		  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
-		  			if (response.status === 200) {
-		  				start()
-		  				if (response.html) {
-							showDashboard(response.html)
-		  				} else {
-		  					if (response.status === 403) setToken('')
-		  					if (redirect) {
-			  					alert('You do not have any deployments. Let\'s make one to get started!')
-			  					showWelcome()
-		  					}
-		  				}
-		  			} else {
-		  				if (redirect) {
-			  				alert('Please verify your email to continue.')
-					  		showVerify()
-					  		initVerify()
-		  				}
-		  			}
-		  		}, true, options)
-		  	}
-
-		  	authLogin(false, {noauth: true})
+		  	authLogin()
 		});
 	</script>
 	<script defer type="text/javascript" src="https://js.stripe.com/v3/"></script>

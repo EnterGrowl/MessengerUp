@@ -14,6 +14,7 @@ var Repo = new mongoose.Schema({
       ref : 'User'
   },
   json: Object,
+  deployed: Boolean,
   created: {
     type: Date,
     default: new Date()

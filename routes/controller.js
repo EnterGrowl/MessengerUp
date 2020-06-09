@@ -170,7 +170,11 @@ exports.success = function(req, res, next) {
 }
 
 exports.build = function(req, res) {
-	Util.defaultPortConfig(req.user, req.body, function(err, build) {
+	Util.defaultPortConfig({
+		user: req.user._id,
+		json: req.body,
+		deployed: false
+	}, function(err, build) {
 		if (err) return Util.systemError(err, res)
 		let _port = build.port
 		let _path = path.join(build.path, `${_port}.zip`)
@@ -181,10 +185,7 @@ exports.build = function(req, res) {
 			res.set('Content-Disposition', 'attachment; filename=MessengerUp.zip');
 			res.set('Content-Length', data.length);
 			res.end(data, 'binary');
-			fs.rmdir(build.path, {
-				recursive: true,
-				maxRetries: 999999
-			}, Util.nonceFunc)
+			rimraf(build.path, Util.nonceFunc)
 		})
 	})
 }
@@ -199,10 +200,12 @@ exports.deploy = function(req, res) {
 	async.waterfall([
 	    function(callback) {
 	    	print(5, 'step 1  ')
-	    	Util.defaultPortConfig(user, json, function(err, build) {
+	    	Util.defaultPortConfig({
+	    		user: user._id,
+	    		json: json,
+	    		deployed: true
+	    	}, function(err, build) {
 	    		if (err) return callback(Util.buildError(session, 'CREATE PORT', _res))
-				console.log('build step 1')
-	    		console.log(build)
 				callback(null, build)
 	    	})
 	    },
@@ -249,10 +252,14 @@ exports.deploy = function(req, res) {
 	    	console.log(build.path)
 			rimraf(build.path, callback)
 	    }
-
 	], function (err, result) {
 	    if (!err) {
 	    	console.log('build finished!', new Date())
+	    	res.json({
+	    		status: 200
+	    	})
+	    } else {
+	    	return Util.buildError(session, err, res)
 	    }
 	});
 }

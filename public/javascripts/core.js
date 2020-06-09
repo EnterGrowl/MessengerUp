@@ -1,6 +1,6 @@
-makeRequestWithHeaders = function(url, body, cb, skip, options) {
+makeRequestWithHeaders = function(url, body, cb, skip) {
     if (url.indexOf('/api/')>-1&&!window.localStorage.getItem('token')) {
-        if (cb) cb('')
+        if (cb) cb({ status: 403 })
         return
     }
     var method = body&&Object.keys(body).length ? 'POST' : 'GET'
@@ -20,15 +20,11 @@ makeRequestWithHeaders = function(url, body, cb, skip, options) {
     }
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-            var response = xhrResponseFormat(xhr, this.status)
             if (!skip) preloader.hide()
-            if (options && options.noauth) {
-                if (cb) cb(response)
-                return
-            }
+            var response = xhrResponseFormat(xhr, this.status)
             if (this.status === 403) {
                 setToken('')
-                alert('Authentication failed. Please try again.')
+                alert('Please login and verify to continue.')
             }
             
             if (cb) return cb(response)
@@ -99,13 +95,13 @@ downloadFile = function(file, name, type) {
     saveAs(blob, name)
 }
 
-start = function(show) {
+initSequence = function(show) {
     $('.splash').hide()
     $('.log-button').hide()
     $('#generator').show()
 }
 
-begin = function(noLogin) {
+showSplash = function(noLogin) {
     $('#generator').hide()
     $('.log-button').hide()
     $('.splash').show()
@@ -123,14 +119,30 @@ showWelcome = function() {
 }
 
 showDashboard = function(html) {
-    if (html) {
-        var newHTML = document.open('text/html', 'replace'); 
-        newHTML.write(html); 
-        newHTML.close(); 
-    } else {
-        $('.onboard').hide()
-        $('.log-button').hide()
-        $('#dashboardPlace').show()
-        $('.logout').show()
-    }
+    var newHTML = document.open('text/html', 'replace');
+    newHTML.write(html);
+    newHTML.close();
+}
+
+authLogin = function() {
+    console.log('make authLogin')
+    // if token present try logging in dashboard or go to login
+    makeRequestWithHeaders('/api/dashboard', null, function(response) {
+        console.log(response)
+        if (response.status === 200) {
+            initSequence()
+            if (response.html) {
+                showDashboard(response.html)
+            } else {
+                alert('You don\'t have any deployments. Let\'s get started!')
+                showWelcome()
+            }
+        } else {
+            if (response.status === 403) {
+                initSequence()
+                showVerify()
+                initVerify()
+            }
+        }
+    }, true)
 }

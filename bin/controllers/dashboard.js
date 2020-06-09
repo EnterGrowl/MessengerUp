@@ -36,9 +36,7 @@ function assets(_id, cb) {
 }
 
 module.exports = function(req, res) {
-	console.log(1)
 	assets(req.user._id, function(assets) {
-		console.log(2)
 		var truthy = false
 		for (var key in assets) {
 			if (assets[key].length) {
@@ -46,25 +44,22 @@ module.exports = function(req, res) {
 			}
 		}
 
-		console.log(3)
 		if (truthy) {
-			console.log(4)
 			// render dashboard and send {status: html:}
     		let filepath = path.resolve('./views/partials/dashboard.ejs')
 		    fs.readFile(filepath, 'utf-8', function(err, file) {
 		        if (err) return Util.systemError(err, res)
 		        let html = ejs.render(file, {
 		        	title: 'Messenger⇪ Dashboard',
-		            deployments: assets.deploys
+		            deploys: assets.deploys,
+		            repos: assets.repos
 		        })
-		    	console.log(5)
 		        return res.json({
 		        	status: 200,
 		        	html: html
 		        })
 			})
 		} else {
-			console.log(6)
 			return res.json({status: 200})
 		}
 	})

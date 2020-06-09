@@ -20,8 +20,8 @@
 			<div class="one columns">
 				<p>&nbsp;</p>
 			</div>
-			<div class="ten columns">
-				<label for="deployBtn">$5 per month, cancel anytime</label>
+			<div class="ten columns" id="deployOpt">
+				<label for="deployBtn">set it and forget it for only $5 per month per app</label>
 				<a class="button button-primary u-full-width" href="javascript:void(0)" id="deployBtn" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
 			</div>
 		</div>
@@ -30,7 +30,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<label for="noncedownload">$1 one time fee</label>
+				<label for="noncedownload">FREE <small>(but you will handle everything else on your own)</small></label>
 				<a class="button button-primary u-full-width" href="javascript:void(0)" onclick="sourceOnly()" id="noncedownload">SOURCE CODE ONLY, NO DEPLOYMENT</a>
 			</div>
 		</div>
@@ -69,7 +69,7 @@
 			try {
 				stripe = Stripe($('#stripeID').attr('val'))
 			} catch(e) {
-				$('#deployBtn').hide()
+				$('#deployOpt').hide()
 				alert('Deployments are not available at this time.')
 			}
 			checkout = {}
@@ -107,7 +107,9 @@
 				if (response.status === 200) {
 					downloadFile(response.text, 'MessengerUp.zip', 'application/zip')
 					setTimeout(function() {
-						alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. Log back in anytime to download.')
+						alert('Thanks for using MessengerUp™! Here is your app that is ready for you to deploy. Log in to deploy it anytime.')
+						// redirect to dashboard
+						authLogin(false, {noauth: true})
 					}, 1481)
 				} else {
 					alert('Sorry! Something went wrong and we are working on it right away. You can try again in a short time or please visit back later or email us (contact@messengerup.com).')
