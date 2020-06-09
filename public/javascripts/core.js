@@ -128,7 +128,6 @@ authLogin = function() {
     console.log('make authLogin')
     // if token present try logging in dashboard or go to login
     makeRequestWithHeaders('/api/dashboard', null, function(response) {
-        console.log(response)
         if (response.status === 200) {
             initSequence()
             if (response.html) {

@@ -24,13 +24,11 @@ const Deploy = require('../../models/deploy').Deploy
 
 function assets(_id, cb) {
 	Repo.find({user: _id}, function(err, repos) {
-		repos = repos || []
-		Deploy.find({user: _id}, function(err, deploys) {
-			deploys = deploys || []
-			cb({
-				repos: repos,
-				deploys: deploys
-			})
+		let _repos = repos.filter(function(r) { if (!r.deployed) return r })
+		let _deploys = repos.filter(function(r) { if (r.deployed) return r })
+		cb({
+			repos: _repos,
+			deploys: _deploys
 		})
 	})
 }

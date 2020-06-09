@@ -36,6 +36,7 @@ Coded by www.creative-tim.com
   <!-- CSS Files / Bootstrap v4 -->
   <link href="/css/bootstrap.min.css" rel="stylesheet" />
   <link href="/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+  <link href="/css/custom.css" rel="stylesheet" />
 </head>
 
 <body class="">
@@ -84,8 +85,22 @@ Coded by www.creative-tim.com
                 <ul class="list-group">
                   <%if (locals.repos.length) {%>
                     <%locals.repos.forEach(function(r){%>
-                      <li class="list-group-item">
-                        foo
+                      <li class="list-group-item clearfix">
+                        <h5 class="list-group-item-heading">
+                          Created:&nbsp;
+                          <%= r.created.toLocaleDateString()%>
+                          <span class="label label-danger pull-right">
+                            <%= r.created.toLocaleTimeString()%>
+                          </span>
+                        </h5>
+                        <p class="list-group-item-text lead">
+                          Number of views: <%=Object.keys(r.json.views).length%>
+                          <br />
+                          <span class="breadcrumb category">Available to deploy</span>
+                        </p>
+                        <div class="btn-toolbar pull-right" role="toolbar" aria-label="">
+                          <a href="#" class="btn btn-primary">DEPLOY</a>
+                        </div>
                       </li>
                     <%})%>
                   <%} else {%>
@@ -128,6 +143,58 @@ Coded by www.creative-tim.com
                   <%} else {%>
                     <li class="list-group-item">N/A</li>
                   <%}%>
+
+                  <li class="list-group-item clearfix">
+                    <img class="img-responsive img-rounded" src="http://placehold.it/256/163a63" alt=""/>
+                    <h3 class="list-group-item-heading">
+                      Amazing Item
+                      <span class="label label-danger pull-right">NEW !</span>
+                    </h3>
+                    <p class="list-group-item-text lead">
+                      Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio.
+                      <br />
+                      <a href="#"><small>Details&#8230;</small></a>
+                    </p>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-list"></i> <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Add to new list</a></li>
+                          <li role="separator" class="divider"></li>
+                          <li><a href="#">A list</a></li>
+                          <li><a href="#">Another list</a></li>
+                          <li><a href="#">Third list</a></li>
+                        </ul>
+                      </div>
+                      <a href="#" class="btn btn-default">Add to cart</a>
+                      <a href="#" class="btn btn-primary">$29.99</a>
+                    </div>
+                  </li>
+                  <li class="list-group-item active clearfix">
+                    <img class="img-responsive img-rounded" src="http://placehold.it/256/163a63" alt=""/>
+                    <h3 class="list-group-item-heading">
+                      Current thing
+                    </h3>
+                    <p class="list-group-item-text lead">
+                      Etiam porta sem malesuada magna mollis euismod. Etiam porta sem malesuada magna mollis euismod.
+                      <br />
+                      <a href="#"><small>Details&#8230;</small></a>
+                    </p>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-list"></i> <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Add to new list</a></li>
+                          <li role="separator" class="divider"></li>
+                          <li><a href="#">A list</a></li>
+                          <li><a href="#">Another list</a></li>
+                          <li><a href="#">Third list</a></li>
+                        </ul>
+                      </div>
+                      <a href="#" class="btn btn-default">Add to cart</a>
+                      <a href="#" class="btn btn-info">$9.95</a>
+                    </div>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -156,13 +223,10 @@ Coded by www.creative-tim.com
   <!--  Notifications Plugin    -->
   <script src="/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script><!-- Paper Dashboard DEMO methods, don't include it in your project! -->
-  <script src="/js/charts.js"></script>
+  <script src="/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script>
   <script>
     $(document).ready(function() {
       document.body.style.display = "block";
-      // Javascript method's body can be found in assets/assets-for-demo/js/demo.js
-      demo.initChartsPages();
     });
   </script>
   <script type="text/javascript">
