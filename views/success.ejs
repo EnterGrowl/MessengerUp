@@ -51,19 +51,8 @@
 							session: session,
 							json: json
 						}, function(response) {
-							if (response.status === 200) {
-								setTimeout(function() {
-									makeRequestWithHeaders('/api/deploy', {
-										session: session,
-										json: json
-									}, function(response) {
-										if (response.status === 200) {
-											
-										}
-									})
-								}, 484)
-							}
-						})
+							window.location.assign('/')
+						}, true)
 					}, 484)
 				</script>
 			</div>

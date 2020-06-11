@@ -2,7 +2,7 @@
 	<div id="stripeID" val="<%=stripe%>" hidden></div>
 	<form id="option">
 		<h5>SELECT OPTION</h5>
-		<p><small>Choose your deployment option. Cancel anytime.</small> <a href="#options"><i class="dark-text fa fa-question-circle"></i></a></p>
+		<p><small>Choose your deployment option. Cancel anytime.</small></p>
 		<div class="row" id="accountType" hidden>
 			<div class="one columns">
 				<p>&nbsp;</p>
@@ -21,7 +21,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns" id="deployOpt">
-				<label for="deployBtn">set it and forget it for only $5 per month per app</label>
+				<label for="deployBtn">$5 per month <small>(250MB, ~100 concurrent connections)</small></label>
 				<a class="button button-primary u-full-width" href="javascript:void(0)" id="deployBtn" onclick="deploy()">DEPLOY NOW, CANCEL ANYTIME</a>
 			</div>
 		</div>
@@ -39,7 +39,7 @@
 				<p>&nbsp;</p>
 			</div>
 			<div class="ten columns">
-				<a class="button u-full-width" href="#deployments">ABOUT DEPLOYMENTS</a>
+				<a class="button u-full-width" href="#deployments"><i class="dark-text fa fa-question-circle"></i>&nbsp;&nbsp;ABOUT DEPLOYMENTS</a>
 			</div>
 		</div>
 	</form>
@@ -48,7 +48,7 @@
 			<h2>Deployments</h2>
 			<a class="close" href="#">&times;</a>
 			<div class="content">
-				The Facebook Messenger application needs to be hosted on a secure HTTPS connection to communicate with Facebook's API and end users. This requires migration of the source code, configuration, networking, and securing operations on server(s). In case you do not have access to these, we suggest you save time and money, and deploy with us!
+				The Facebook Messenger application needs to be hosted on a secure HTTPS network to communicate with Facebook's API. This requires handling and configuring the source code, managing networking, storage, and security on a server.<br><br>Deployments vary by network and storage. Our basic deployment supports up to 100 simultaneous connections. Deploy with us now for a low price of $5 a month!
 			</div>
 		</div>
 	</div>
@@ -73,6 +73,44 @@
 				alert('Deployments are not available at this time.')
 			}
 			checkout = {}
+		}
+
+		function deployPreflight() {
+			let appId = window.json.configs.appId
+			let pageId = window.json.configs.pageId
+			let pageToken = window.json.configs.pageToken
+			let secret = window.json.configs.secret
+			let verifyToken = window.json.configs.verifyToken
+			if(	!appId||
+				!pageId||
+				!pageToken||
+				!secret||
+				!verifyToken) {
+				alert('Missing application configurations. Please include them and try again.')
+				$('#2').hide()
+				$('#setConfiguration').show()
+				$('#configurations').show()
+				$('#setConfiguration').off().on('click', function() {
+					var dict = {
+						appId: $('#appId').val(),
+						pageId: $('#pageId').val(),
+						verifyToken: $('#verifyToken').val(),
+						secret: $('#secret').val(),
+						pageToken: $('#pageToken').val(),
+						webURLs: $('#webURLs').val().toLowerCase().split(/,.*?/g).map(function(url){ if (url) return url.trim() }).filter(function(url) { if (url) return url }),
+					}
+
+					var re = /^https:\/\//
+					for (var i = 0; i < dict.webURLs.length; i++) {
+						if (dict.webURLs[i].trim() && !re.exec(dict.webURLs[i])) {
+							alert('Web URL must start with "https://", please try again.')
+							return
+						}
+					}
+					window.json.configs = dict
+					deployPreflight()
+				})
+			}
 		}
 
 		function deploy() {

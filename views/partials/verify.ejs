@@ -87,7 +87,7 @@
 						setToken(response.token)
 						deployments = response.deployments
 						repos = response.repos
-						if (window.login) {
+						if (window.login === true) {
 							// request and replace innerHTML with dashboard
 							authLogin()
 						} else {

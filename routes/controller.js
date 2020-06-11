@@ -53,6 +53,15 @@ exports.splash = function(req, res, next) {
 	})
 }
 
+exports.create = function(req, res, next) {
+	res.render('index', { 
+		title: 'Messenger⇪',
+		subtitle: 'FREE Messenger app. Deploy in seconds.',
+		stripe: publicKey,
+		memo: true
+	})
+}
+
 exports.email = function(req, res, next) {
 	/*
 		find user by email
@@ -196,6 +205,7 @@ exports.deploy = function(req, res) {
 	const json = req.body.json
 	const user = req.user
 	const that = this
+	let repoId = ''
 
 	async.waterfall([
 	    function(callback) {
@@ -203,9 +213,10 @@ exports.deploy = function(req, res) {
 	    	Util.defaultPortConfig({
 	    		user: user._id,
 	    		json: json,
+	    		session: session,
 	    		deployed: true
 	    	}, function(err, build) {
-	    		if (err) return callback(Util.buildError(session, 'CREATE PORT', _res))
+	    		if (err||!callback) return Util.buildError(session, 'CREATE PORT', _res)
 				callback(null, build)
 	    	})
 	    },
@@ -218,16 +229,16 @@ exports.deploy = function(req, res) {
 				repo: build.repo,
 				port: build.port
 			})
+			repoId = build.repo
 			deploy.save(function(err) {
-				if (err) return callback(
-					Util.buildError(session, `DEPLOY SAVE PORT ${build.port}`, _res))
+				if (err||!callback) return Util.buildError(session, `DEPLOY SAVE PORT ${build.port}`, _res)
 				callback(null, build)
 			})
 	    },
 	    function(build, callback) {
 	    	print(5, 'step 3  ')
 	    	Cert.add(build.port, function(err) {
-	    		if (err) return callback(Util.buildError(session, err, _res))
+	    		if (err||!callback) return Util.buildError(session, err, _res)
 		        callback(null, build)
 		    })
 	    },
@@ -236,14 +247,13 @@ exports.deploy = function(req, res) {
 			build.origin = path.join(build.path, build.port)
 			build.destination = path.join(secrets['DEPLOY'][process.env.MODE]['PATH'], build.port)
 	    	fs.rename(build.origin, build.destination, function(err) {
-	    		if (err) return callback(Util.buildError(session, `MV BUILD PORT ${_port}`, _res))
+	    		if (err||!callback) return Util.buildError(session, `MV BUILD PORT ${_port}`, _res)
 		        callback(null, build)
 		    })
 	    },
 	    function(build, callback) {
 	    	print(5, 'step 5  ')
 	    	Process.start(build.destination, function(err) {
-	    		if (err) return callback(Util.buildError(session, `PROCESS START PORT ${build.port}`, _res))
 	    		callback(null, build)
 	    	})
 	    },
@@ -253,13 +263,11 @@ exports.deploy = function(req, res) {
 			rimraf(build.path, callback)
 	    }
 	], function (err, result) {
-	    if (!err) {
-	    	console.log('build finished!', new Date())
-	    	res.json({
-	    		status: 200
-	    	})
-	    } else {
-	    	return Util.buildError(session, err, res)
+    	_res.json({
+    		status: 200
+    	})
+	    if (err) {
+	    	console.error(err)
 	    }
 	});
 }

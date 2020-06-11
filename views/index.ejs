@@ -24,6 +24,9 @@
   	</head>
   	<body>
   		<%include helpers/preloader%>
+  		<%if (locals.memo) {%>
+  		<div id="memo" hidden></div>
+  		<%}%>
 	    <div class="topbar" id="topbar">
 			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
 		    <p><%= subtitle %></p>
@@ -208,7 +211,12 @@
 
 		  	$('.login').off().on('click', authLogin)
 
-		  	authLogin()
+		  	if ($('#memo').length) {
+		  		// show welcome
+		  		initSequence()
+		  	} else {
+		  		authLogin(true)
+		  	}
 		});
 	</script>
 	<script defer type="text/javascript" src="https://js.stripe.com/v3/"></script>

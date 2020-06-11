@@ -42,7 +42,7 @@ exports.stop = function(_path, cb) {
 }
 
 exports.nginx = function(name, domains, cb) {
-	let command = `certbot certonly --nginx --cert-name ${name} ${domains} --noninteractive --config-dir ~/.certbot/config --logs-dir ~/.certbot/logs --work-dir ~/.certbot/work --agree-tos --email ${secrets['EMAIL'][process.env.MODE]}`
+	let command = `certbot certonly --nginx --cert-name ${name} ${domains} --noninteractive --agree-tos -m ${secrets['EMAIL'][process.env.MODE]}`
 	print(10, '$ ', command)
 	return Util.exec(command, cb)
 }

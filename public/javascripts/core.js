@@ -98,7 +98,11 @@ downloadFile = function(file, name, type) {
 initSequence = function(show) {
     $('.splash').hide()
     $('.log-button').hide()
+    $('#setConfiguration').hide()
+    $('#step2').hide()
     $('#generator').show()
+    $('#2').show()
+    $('#step1').show()
 }
 
 showSplash = function(noLogin) {
@@ -124,7 +128,7 @@ showDashboard = function(html) {
     newHTML.close();
 }
 
-authLogin = function() {
+authLogin = function(root) {
     console.log('make authLogin')
     // if token present try logging in dashboard or go to login
     makeRequestWithHeaders('/api/dashboard', null, function(response) {
@@ -133,11 +137,10 @@ authLogin = function() {
             if (response.html) {
                 showDashboard(response.html)
             } else {
-                alert('You don\'t have any deployments. Let\'s get started!')
                 showWelcome()
             }
         } else {
-            if (response.status === 403) {
+            if (response.status === 403 && !root) {
                 initSequence()
                 showVerify()
                 initVerify()
