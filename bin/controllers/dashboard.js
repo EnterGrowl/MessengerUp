@@ -19,6 +19,7 @@ const Util = require('../../lib/util')
 const User = require('../../models/user').User
 const Payment = require('../../models/payment').Payment
 const Repo = require('../../models/repo').Repo
+const Stat = require('../../models/stat').Stat
 const Deploy = require('../../models/deploy').Deploy
 
 
@@ -26,19 +27,38 @@ function assets(_id, cb) {
 	Repo.find({user: _id}, function(err, repos) {
 		let _repos = repos.filter(function(r) { if (!r.deployed) return r })
 		let _deploys = repos.filter(function(r) { if (r.deployed) return r })
-		cb({
-			repos: _repos,
-			deploys: _deploys
+		Deploy.find({user: _id}, function(err, deploys) {
+			deploys = deploys || []
+			var _ports = deploys.map(function(d) { return d.port })
+			Stat.find({
+				port: {
+					$in: _ports
+				},
+				created: {
+					$gte: new Date((new Date().getTime() - (15 * 24 * 60 * 60 * 1000)))
+				}
+			}).sort({ field: 'created', test: -1 }).exec(function(err, stats) {
+				stats = stats || []
+				cb({
+					repos: _repos,
+					deploys: _deploys,
+					stats: stats
+				})
+			})
 		})
 	})
 }
 
+
 module.exports = function(req, res) {
 	assets(req.user._id, function(assets) {
 		var truthy = false
-		for (var key in assets) {
+		assets.title = 'Messenger⇪ Dashboard'
+		
+		for (var key in ['repos', 'deploys']) {
 			if (assets[key].length) {
 				truthy = true
+				break
 			}
 		}
 
@@ -47,11 +67,7 @@ module.exports = function(req, res) {
     		let filepath = path.resolve('./views/partials/dashboard.ejs')
 		    fs.readFile(filepath, 'utf-8', function(err, file) {
 		        if (err) return Util.systemError(err, res)
-		        let html = ejs.render(file, {
-		        	title: 'Messenger⇪ Dashboard',
-		            deploys: assets.deploys,
-		            repos: assets.repos
-		        })
+		        let html = ejs.render(file, assets)
 		        return res.json({
 		        	status: 200,
 		        	html: html
