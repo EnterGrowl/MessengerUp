@@ -37,11 +37,11 @@ function assets(_id, cb) {
 				created: {
 					$gte: new Date((new Date().getTime() - (15 * 24 * 60 * 60 * 1000)))
 				}
-			}).sort({ field: 'created', test: -1 }).exec(function(err, stats) {
+			}).sort({ created: -1 }).exec(function(err, stats) {
 				stats = stats || []
 				cb({
 					repos: _repos,
-					deploys: _deploys,
+					deploys: deploys,
 					stats: stats
 				})
 			})
@@ -54,27 +54,21 @@ module.exports = function(req, res) {
 	assets(req.user._id, function(assets) {
 		var truthy = false
 		assets.title = 'Messenger⇪ Dashboard'
-		
-		for (var key in ['repos', 'deploys']) {
-			if (assets[key].length) {
-				truthy = true
-				break
-			}
-		}
+		console.log(assets)
 
-		if (truthy) {
-			// render dashboard and send {status: html:}
-    		let filepath = path.resolve('./views/partials/dashboard.ejs')
-		    fs.readFile(filepath, 'utf-8', function(err, file) {
-		        if (err) return Util.systemError(err, res)
-		        let html = ejs.render(file, assets)
-		        return res.json({
-		        	status: 200,
-		        	html: html
-		        })
-			})
-		} else {
+		if (!assets['repos'].length && !assets['deploys'].length) {
 			return res.json({status: 200})
 		}
+
+		// render dashboard and send {status: html:}
+		let filepath = path.resolve('./views/partials/dashboard.ejs')
+	    fs.readFile(filepath, 'utf-8', function(err, file) {
+	        if (err) return Util.systemError(err, res)
+	        let html = ejs.render(file, assets)
+	        return res.json({
+	        	status: 200,
+	        	html: html
+	        })
+		})
 	})
 }

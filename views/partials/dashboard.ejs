@@ -61,9 +61,60 @@ Coded by www.creative-tim.com
         </div>
       </nav>
       <!-- End Navbar -->
+      
       <div class="content">
         Create New&nbsp;&nbsp;<button type="button" id="create" class="btn btn-primary btn-circle btn-md"><i class="fa fa-plus" style="font-size:38px;color:white"></i></button> 
+        <%if (locals.deploys.length) {%>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-1">
+                    <div class="icon-big text-center icon-warning">
+                      <i class="nc-icon nc-vector text-danger"></i>
+                    </div>
+                  </div>
+                  <div class="col-11">
+                    <div class="numbers">
+                      <p class="card-category">Deployments</p>
+                      <p class="card-title">(<%=locals.deploys.length%>)<p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <ul class="list-group">
+                  <%locals.deploys.forEach(function(d, idx){%>
+                  <li class="list-group-item clearfix">
+                    <h5 class="list-group-item-heading">
+                      https://<%=d.port%>.messengerup.com
+                    </h5>
+                    <h6 class="list-group-item-heading">
+                      Created:&nbsp;
+                      <%= d.created.toLocaleDateString()%>
+                      <span class="label label-danger pull-right">
+                        <%= d.created.toLocaleTimeString()%>
+                      </span>
+                    </h6>
+                    <span class="breadcrumb category">ACTIVE</span>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="">
+                      <div class="btn-group">
+                        <div class="btn-toolbar pull-right" role="toolbar" aria-label="">
+                          <a href="#" class="btn btn-primary">NO DATA</a>
+                        </div>
+                    </div>
+                  </li>
+                  <%})%>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%}%>
 
+        <%if (locals.repos.length) {%>
         <div class="row">
           <div class="col-sm-12">
             <div class="card card-stats">
@@ -127,44 +178,9 @@ Coded by www.creative-tim.com
             </div>
           </div>
         </div>
+        <%}%>
       </div>
-      <div class="content">
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="card card-stats">
-              <div class="card-body ">
-                <div class="row">
-                  <div class="col-1">
-                    <div class="icon-big text-center icon-warning">
-                      <i class="nc-icon nc-vector text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="col-11">
-                    <div class="numbers">
-                      <p class="card-category">Deployments</p>
-                      <p class="card-title">(<%=locals.deploys.length%>)<p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <ul class="list-group">
-                  <%if (locals.deploys.length) {%>
-                    <%locals.deploys.forEach(function(d, idx){%>
-                      <li class="list-group-item">
-                        foo<%=idx%>
-                      </li>
-                    <%})%>
-                  <%} else {%>
-                    <li class="list-group-item">N/A</li>
-                  <%}%>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       <footer class="footer footer-black  footer-white ">
         <div class="container-fluid">
           <div class="row">
