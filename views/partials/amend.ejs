@@ -1,4 +1,4 @@
-<div id="amend" hidden>
+<div id="amend" class="onboard" hidden>
 	<h5>AMEND YOUR VIEWS</h5>
 	<p><small>Fill out the details of your views with text, photo, web, and navigation elements. Select a view and add elements to it.</small></p>
 	<form>
@@ -391,13 +391,13 @@
 			let t = confirm('Confirm if you are finished and want to proceed to build your source code.')
 
 			if (t) {
+				$('#amend').hide()
+				$('#verify').show()
 				initVerify()
 				initResults({
 					configs: agg[0],
 					views: viewAgg
 				})
-				$('#amend').hide()
-				$('#verify').show()
 			}
 		})
 	</script>

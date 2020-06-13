@@ -1,4 +1,4 @@
-<div id="verify" hidden>
+<div id="verify" class="onboard" hidden>
 	<a class="button hidden" href="#error" id="clickSystemError"></a>
 	<form id="step1">
 		<h5>ENTER YOUR EMAIL</h5>
@@ -34,6 +34,19 @@
 			o = {}
 			deployments = []
 			repos = []
+			let authenticated = getAuthenticated()
+			if (authenticated==='true') {
+				resetAuthenticated()
+				if (!getToken()) return
+		  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
+		  			console.log(response)
+		  			if (response.status === 200) {
+		  				console.log('show options')
+						$('#verify').hide()
+						$('#results').show()
+		  			}
+		  		}, skipPreloader)
+			}
 		}
 
 		function getEmail() {
@@ -74,35 +87,12 @@
 						setToken(response.token)
 						deployments = response.deployments
 						repos = response.repos
-						if (window.login) {
+						if (window.login === true) {
 							// request and replace innerHTML with dashboard
-					  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
-					  			if (response.status === 200) {
-					  				window.login = null
-					  				if (response.html) {
-										$('#dashboardPlace').html(response.html)
-										$('#dashboardPlace').show()
-					  				} else {
-					  					// no deployments
-					  					// destroy token, alert, and display welcome
-					  					setToken('')
-					  					alert('You do not have any deployments. Let\'s make one to get started!')
-					  					$('#verify').hide()
-					  					$('#welcome').show()
-					  				}
-					  			} else {
-					  				window.login = true
-							  		$('.login').hide()
-							  		$('#verify').show()
-					  			}
-					  		})
+							authLogin()
 						} else {
-							console.log('show option')
 							$('#verify').hide()
 							$('#results').show()
-							if (!response.type) {
-								$('#accountType').show()
-							}
 						}
 					} else {
 						let message = response.message ? response.message : defaultError

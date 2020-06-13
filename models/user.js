@@ -15,10 +15,6 @@ var User = new mongoose.Schema({
         required: true,
         type: String
     },
-    type: {
-        enum: ['basic', 'extended'],
-        type: String
-    },
     created: {
         type: Date,
         default: new Date()

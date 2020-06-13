@@ -1,4 +1,4 @@
-<div id="welcome">
+<div id="welcome" class="onboard">
 	<form>
 		<h5>PLEASE HAVE THE FOLLOWING READY</h5>
 		<p><small>Prepare the following items before continuing:</small></p>
@@ -12,7 +12,6 @@
 	</form>
 	<script type="text/javascript">
 		$('#1').off().on('click', function(e) {
-			window.login = null
 			$('#welcome').hide()
 			$('#configuration').show()
 		})

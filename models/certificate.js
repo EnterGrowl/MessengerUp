@@ -7,15 +7,21 @@
  */
 
 const mongoose = require('mongoose')
+const Create = require('../services/certificate').create
 
 var Cert = new mongoose.Schema({
-  user: {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : 'User'
+  name: String,
+  ports: {
+    type: [String],
+    default: []
   },
   domains: {
       type: [String],
       default: []
+  },
+  locked: {
+      type: Boolean,
+      default: false
   },
   created: {
     type: Date,
@@ -30,6 +36,15 @@ Cert.set('toObject', {
     delete ret._id
     delete ret.user
   }
-});
+})
+
+Cert.pre('save', function(next) {
+  if (this.domains.length >= 90) {
+    this.locked = true
+    // create new cert
+    Create()
+  }
+  next()
+})
 
 exports.Cert = mongoose.model('Cert', Cert)

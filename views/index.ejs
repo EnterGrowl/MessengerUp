@@ -2,12 +2,18 @@
 <html>
   	<head>
 	    <title><%= title %></title>
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
 	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
-	    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	    <script type="text/javascript" src="javascripts/zepto.min.js"></script>
-	    <script type="text/javascript" src="javascripts/core.js"></script>
-
+	    <script type="text/javascript" src="/javascripts/zepto.min.js"></script>
+	    <script type="text/javascript" src="/javascripts/core.js"></script>
 		<meta property="og:url" content="https://messengerup.com" />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="MessengerUp™" />
@@ -17,6 +23,9 @@
   	</head>
   	<body>
   		<%include helpers/preloader%>
+  		<%if (locals.memo) {%>
+  		<div id="memo" hidden></div>
+  		<%}%>
 	    <div class="topbar" id="topbar">
 			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
 		    <p><%= subtitle %></p>
@@ -28,6 +37,7 @@
 	    	window.agg = []
 	    	window.viewNames = ['welcome', 'fallback', 'greeting']
 	    	const defaultError = 'There was an error on our end, please try again at a later time.'
+	    	const skipPreloader = true
 			var destinations = []
 			var viewElements = []
 			var selectedView = 'welcome'
@@ -107,7 +117,7 @@
 		<!-- Primary Page Layout
 		–––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-		<div class="section hero">
+		<div class="section splash hero">
 			<div class="container">
 			  <div class="row">
 			    <div class="one-half column">
@@ -122,37 +132,37 @@
 			</div>
 		</div>
 
-		<div class="section values">
+		<div class="section splash values">
 			<div class="container">
 			  <div class="row">
 			    <div class="one-third column value">
 			      <h2 class="value-multiplier">+100M</h2>
-			      <h5 class="value-heading">US Users</h5>
+			      <h5 class="value-heading">U.S. Users</h5>
 			      <p class="value-description">One in three people use Messenger. > 1 billion people worldwide.</p>
 			    </div>
 			    <div class="one-third column value">
 			      <h2 class="value-multiplier">+2M</h2>
-			      <h5 class="value-heading"><small>US DLs/ mo.</small></h5>
-			      <p class="value-description">It's growing fast, every day. 2 million downloads a month in the US.</p>
+			      <h5 class="value-heading"><small>U.S. dls/ mo.</small></h5>
+			      <p class="value-description">It's growing fast, 2 million downloads a month in the US alone.</p>
 			    </div>
 			    <div class="one-third column value">
 			      <h2 class="value-multiplier">FREE</h2>
 			      <h5 class="value-heading">No Excuses</h5>
-			      <p class="value-description">Build your source code now. No experience necessary. Messenger up!</p>
+			      <p class="value-description">Get your source code or deploy now. No experience necessary!</p>
 			    </div>
 			  </div>
 			</div>
 		</div>
 
-		<div class="section get-help">
+		<div class="section splash get-help">
 			<div class="container">
 			  <h3 class="section-heading">What are you waiting for?</h3>
-			  <p class="section-description">Your free Facebook Messenger app is moments away!<br><br><small>MessengerUp™ is an open source project that generates your customized Facebook Messenger application, at no cost or fees, and deployment ready. The source code is yours to keep. Need someone to deploy it for you? We can do that too.</small></p>
+			  <p class="section-description">Your own Facebook Messenger app is moments away!<br><br><small>MessengerUp™ lets you customize and deploy conversational Facebook Messenger applications with our one-of-a-kind intuitive interface. There is nowhere as more convenient and affordable than MessengerUp™. Try it risk free, cancel anytime.</small></p>
 			  <a class="button button-primary start" href="javascript:void(0)">Let's Go!</a>
 			</div>
 		</div>
 
-		<div class="section categories">
+		<div class="section splash categories">
 			<div class="container">
 			  <h3 class="section-heading">Why Messenger?</h3>
 			  <p class="section-description">CONVERSATIONAL COMMERCE &amp; INFORMATION EXCHANGE<br/><small>Express perfect communications with text, images, and web redirects. Explain your products and services in the detail you intend. Create transactions from the chat in real time! It's a natural extension of yourself to a whole new audience.</small></p>
@@ -195,42 +205,17 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 		  	$('.start').off().on('click', function() {
-		  		$('.section').hide()
-		  		$('.login').hide()
-		  		$('#generator').show()
+		  		initSequence()
 		  	})
 
-		  	$('.login').off().on('click', function() {
-		  		window.login = true
-		  		$('.login').hide()
-		  		let token = getToken()
-		  		$('.section').hide()
-		  		$('#generator').show()
-		  		if (token) {
-			  		makeRequestWithHeaders('/api/dashboard', null, function(response) {
-			  			if (response.status === 200) {
-			  				if (response.html) {
-								$('#dashboardPlace').html(response.html)
-								$('#dashboardPlace').show()
-			  				} else {
-			  					setToken('')
-			  					alert('You do not have any deployments. Let\'s make one to get started!')
-			  					$('#verify').hide()
-			  					$('#welcome').show()
-			  				}
-			  			} else {
-			  				alert('Please verify your email to continue.')
-					  		$('#welcome').hide()
-					  		$('#verify').show()
-					  		initVerify()
-			  			}
-			  		})
-		  		} else {
-			  		$('#welcome').hide()
-			  		$('#verify').show()
-			  		initVerify()
-		  		}
-		  	})
+		  	$('.login').off().on('click', authLogin)
+
+		  	if ($('#memo').length) {
+		  		// show welcome
+		  		initSequence()
+		  	} else {
+		  		authLogin(true)
+		  	}
 		});
 	</script>
 	<script defer type="text/javascript" src="https://js.stripe.com/v3/"></script>

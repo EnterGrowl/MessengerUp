@@ -19,7 +19,7 @@ var Token = new mongoose.Schema({
   },
   expirationTime: {
     type: Date,
-    default: new Date().setHours(new Date().getHours() + 3)
+    default: new Date().setMonth(new Date().getMonth() + 3)
   },
   created: {
     type : Date,

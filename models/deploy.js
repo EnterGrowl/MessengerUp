@@ -17,6 +17,10 @@ var Deploy = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : 'Repo'
   },
+  cert: {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'Cert'
+  },
   port: String,
   created: {
     type: Date,

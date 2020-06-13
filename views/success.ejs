@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title><%= title %></title>
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+	    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
+	    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	    <script type="text/javascript" src="/javascripts/zepto.min.js"></script>
+	    <script type="text/javascript" src="/javascripts/core.js"></script>
+
+		<meta property="og:url" content="https://messengerup.com" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="MessengerUp™" />
+		<meta property="og:description" content="Seconds away from your own Messenger application." />
+		<meta property="og:image" content="https://messengerup.s3.amazonaws.com/fbm.logo.png" />
+		<meta property="fb:app_id" content="807024186370687" />
+  	</head>
+  	<body>
+  		<%include helpers/preloader%>
+	    <div class="topbar" id="topbar">
+			<h1>Messenger<span class="blue-text strong up">⇪</span></h1>
+		    <p><%= subtitle %></p>
+	    </div>
+
+	    <div id="sessionID" val="<%=session%>" hidden></div>
+	    <div id="token" val="<%=token%>" hidden></div>
+		<div class='container' id='generator'>
+			<div>
+				<form id="option">
+					<h5>SUCCESS!</h5>
+					<p><small>Your deployment is being prepared. You will be notified by email when your deployment becomes available on the dashboard. The next time you visit us, you will be redirected to the dashboard.</small></a></p>
+
+					<p><small>Your application will now be available for review and approval by Facebook to publish to the public.</small></p>
+				</form>
+
+				<script type="text/javascript">
+					let session = $('#sessionID').attr('val')
+					setToken($('#token').attr('val'))
+					$('#token').remove()
+					let json = getCache()
+					console.log(session, json)
+					setTimeout(function() {
+						makeRequestWithHeaders('/api/deploy', {
+							session: session,
+							json: json
+						}, function(response) {
+							window.location.assign('/')
+						}, true)
+					}, 484)
+				</script>
+			</div>
+		</div>
+		<footer class="page-footer" id="footer">
+			Copyright 2020 MessengerUp<sup>&trade;</sup>
+		</footer>
+	</body>
+</html>
