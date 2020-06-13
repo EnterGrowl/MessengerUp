@@ -89,6 +89,7 @@
 						repos = response.repos
 						if (window.login === true) {
 							// request and replace innerHTML with dashboard
+							window.login = null
 							authLogin()
 						} else {
 							$('#verify').hide()

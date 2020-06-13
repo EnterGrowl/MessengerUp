@@ -111,7 +111,10 @@ showSplash = function(noLogin) {
     $('.splash').show()
     if (!noLogin) {
         $('.login').show()
-        $('.login').off().on('click', authLogin)
+        $('.login').off().on('click', function() {
+            window.login = true
+            authLogin()
+        })
     }
     $('#preloader').hide()
 }
