@@ -31,7 +31,7 @@
 		    <p><%= subtitle %></p>
 	    </div>
 		<div class="log-button login">
-			<a class="button button-success" href="javascript:void(0)" id="login">LOG IN</a>
+			<a class="button button-success" href="javascript:void(0)" id="login" hidden>LOG IN</a>
 		</div>
 	    <script type="text/javascript">
 	    	window.agg = []
@@ -117,7 +117,7 @@
 		<!-- Primary Page Layout
 		–––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-		<div class="section splash hero">
+		<div class="section splash hero" hidden>
 			<div class="container">
 			  <div class="row">
 			    <div class="one-half column">
@@ -132,7 +132,7 @@
 			</div>
 		</div>
 
-		<div class="section splash values">
+		<div class="section splash values" hidden>
 			<div class="container">
 			  <div class="row">
 			    <div class="one-third column value">
@@ -154,7 +154,7 @@
 			</div>
 		</div>
 
-		<div class="section splash get-help">
+		<div class="section splash get-help" hidden>
 			<div class="container">
 			  <h3 class="section-heading">What are you waiting for?</h3>
 			  <p class="section-description">Your own Facebook Messenger app is moments away!<br><br><small>MessengerUp™ lets you customize and deploy conversational Facebook Messenger applications with our one-of-a-kind intuitive interface. There is nowhere as more convenient and affordable than MessengerUp™. Try it risk free, cancel anytime.</small></p>
@@ -162,7 +162,7 @@
 			</div>
 		</div>
 
-		<div class="section splash categories">
+		<div class="section splash categories" hidden>
 			<div class="container">
 			  <h3 class="section-heading">Why Messenger?</h3>
 			  <p class="section-description">CONVERSATIONAL COMMERCE &amp; INFORMATION EXCHANGE<br/><small>Express perfect communications with text, images, and web redirects. Explain your products and services in the detail you intend. Create transactions from the chat in real time! It's a natural extension of yourself to a whole new audience.</small></p>
@@ -204,17 +204,16 @@
 	<script type="text/javascript" src="/javascripts/pin.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			showSplash()
 		  	$('.start').off().on('click', function() {
 		  		initSequence()
 		  	})
-
-		  	$('.login').off().on('click', authLogin)
 
 		  	if ($('#memo').length) {
 		  		// show welcome
 		  		initSequence()
 		  	} else {
-		  		authLogin(true)
+		  		authLogin(null, true)
 		  	}
 		});
 	</script>

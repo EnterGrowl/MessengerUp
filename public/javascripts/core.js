@@ -70,20 +70,6 @@ getToken = function() {
     return localStorage.getItem('token')
 }
 
-<<<<<<< HEAD
-downloadFile = function(file, name, type) {
-    var blob = null;
-    /** base64 to blob, else just blob */
-    var byteCharacters = atob(file);
-    var byteNumbers = new Array(byteCharacters.length);
-    for (var i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    };
-    var byteArray = new Uint8Array(byteNumbers);
-    blob = new Blob([byteArray], {type: type});
-    saveAs(blob, name);
-};
-=======
 resetAuthenticated = function() {
     localStorage.setItem('authenticated', '')
 }
@@ -123,7 +109,11 @@ showSplash = function(noLogin) {
     $('#generator').hide()
     $('.log-button').hide()
     $('.splash').show()
-    if (!noLogin) $('.login').show()
+    if (!noLogin) {
+        $('.login').show()
+        $('.login').off().on('click', authLogin)
+    }
+    $('#preloader').hide()
 }
 
 showVerify = function() {
@@ -142,7 +132,7 @@ showDashboard = function(html) {
     newHTML.close();
 }
 
-authLogin = function(root) {
+authLogin = function(e, root) {
     console.log('make authLogin')
     // if token present try logging in dashboard or go to login
     makeRequestWithHeaders('/api/dashboard', null, function(response) {
@@ -162,4 +152,3 @@ authLogin = function(root) {
         }
     }, true)
 }
->>>>>>> prod
