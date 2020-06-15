@@ -88,7 +88,7 @@ exports.create = function(cb) {
 
 	// serial async
 	function findUniqueName(next) {
-		let us = uniqueString()
+		let us = `${uniqueString()}.messengerup.com`
 		isUniqueName(us, function(isUnique) {
 			if (isUnique) {
 				return next(us)
