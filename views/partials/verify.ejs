@@ -99,10 +99,14 @@
 						let message = response.message ? response.message : defaultError
 						$('#errorMessage').text(message)
 						$('#clickSystemError').click()
+						$('#step2').show()
+						$('#verify').show()
 					}
 				} catch(e) {
 					$('#errorMessage').text(defaultError)
 					$('#clickSystemError').click()
+					$('#step2').show()
+					$('#verify').show()
 				}
 			})
 		}

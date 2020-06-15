@@ -88,8 +88,16 @@
 				!verifyToken) {
 				alert('Missing application configurations. Please include them and try again.')
 				$('#2').hide()
+				$('#results').hide()
 				$('#setConfiguration').show()
-				$('#configurations').show()
+				$('#setConfigurationCancel').show()
+				$('#configuration').show()
+				$('#setConfigurationCancel').off().on('click', function() {
+					$('#configuration').hide()
+					$('#setConfiguration').hide()
+					$('#setConfigurationCancel').hide()
+					$('#results').show()
+				})
 				$('#setConfiguration').off().on('click', function() {
 					var dict = {
 						appId: $('#appId').val(),
@@ -110,7 +118,9 @@
 					window.json.configs = dict
 					deployPreflight()
 				})
+				return 1
 			}
+			return 0
 		}
 
 		function deploy() {
@@ -118,6 +128,8 @@
 			// build chatbot from window.finalJSON
 			// deploy chatbot
 			// display list of chatbots deployed + metrics
+			let err = deployPreflight()
+			if (err) return
 			window.json.type = 'basic'
 			// get session token and create session
 			makeRequestWithHeaders('/api/checkout', window.json, function(response) {
