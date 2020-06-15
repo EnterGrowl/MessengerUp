@@ -15,7 +15,7 @@ const secrets = require('../.secrets.json')
 exports.nginx = function(cb) {
 	let command = 'systemctl reload nginx'
 	print(10, '! ', command)
-	return Util.exec(command, cb)
+	return Util.exec(command, cb||Util.nonceFunc)
 }
 
 exports.start = function(_path, cb) {
@@ -41,11 +41,19 @@ exports.stop = function(_path, cb) {
 	return Util.exec(command, cb)
 }
 
-exports.nginx = function(name, domains, cb) {
-	let command = `certbot certonly --nginx --cert-name ${name} --noninteractive --agree-tos --register-unsafely-without-email  ${domains}`
-	// let command = `certbot certonly --nginx --cert-name ${name} ${domains} --noninteractive --agree-tos -m ${secrets['EMAIL'][process.env.MODE]}`
-	print(10, '$ ', command)
-	return Util.exec(command, cb)
+exports.certbot = function(name, domains, cb) {
+	return this.nginx(function() {
+		return setTimeout(function() {
+			let command = null
+			if (!domains.length) {
+				command = `certbot --nginx -d ${name} --noninteractive --agree-tos --register-unsafely-without-email`
+			} else {
+				command = `certbot certonly --nginx --cert-name ${name} ${domains} --noninteractive --agree-tos --register-unsafely-without-email`
+			}
+			print(10, '$ ', command)
+			return Util.exec(command, cb)
+		}, 144)
+	})
 }
 
 exports.fbWhitelist = function() {
@@ -57,4 +65,3 @@ exports.fbWhitelist = function() {
 		}' "https://graph.facebook.com/v7.0/me/messenger_profile?access_token=PAGE_ACCESS_TOKEN"
 	*/
 }
-

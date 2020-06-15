@@ -222,8 +222,6 @@ exports.deploy = function(req, res) {
 	    },
 	    function(build, callback) {
 	    	print(5, 'step 2  ')
-	    	console.log(build)
-	    	console.log(callback)
 			let deploy = new Deploy({
 				user: user._id,
 				repo: build.repo,

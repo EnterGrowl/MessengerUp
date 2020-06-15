@@ -47,7 +47,8 @@ exports.add = function(port, cb) {
 				cert.markModified('ports')
 				let domains = cert.domains.map(function(d) { return `-d ${d.replace('https://', '')}`}).join(' ')
 
-				Process.nginx(cert.name, domains, function() {
+				Process.certbot(cert.name, domains, function() {
+					Process.nginx()
 					/** NGINX writes to stderr by default */
 					print(5, 'cert 7  ')
 					return cert.save(cb)
@@ -103,13 +104,11 @@ exports.create = function(cb) {
 		})
 
 		// add cert
-		let command = `certbot --nginx -d ${name} --noninteractive`
-		Util.exec(command, function(err) {
-			if (err) {
-				if (cb) return cb(err)
-				else return
-			}
-			cert.save(function(err) {
+		Process.certbot(name, [], function() {
+			Process.nginx()
+			/** NGINX writes to stderr by default */
+			print(5, 'cert 7  ')
+			return cert.save(function(err) {
 				if (cb) {
 					return cb(err, cert)
 				}
