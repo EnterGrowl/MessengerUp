@@ -107,6 +107,7 @@ initSequence = function(show) {
 
 showSplash = function(noLogin) {
     $('#generator').hide()
+    $('#setConfigurationCancel').hide()
     $('.log-button').hide()
     $('.splash').show()
     if (!noLogin) {
